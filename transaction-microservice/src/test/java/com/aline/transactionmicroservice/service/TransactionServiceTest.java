@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -19,13 +18,15 @@ class TransactionServiceTest {
     private static final LocalDateTime NOW = LocalDateTime.now();
 
     TransactionRepository repository;
+    AccountService accountService;
     TransactionService service;
     Transaction dummyTransaction;
 
     @BeforeEach
     void setUp() {
         repository = mock(TransactionRepository.class);
-        service = new TransactionService(repository);
+        accountService = mock(AccountService.class);
+        service = new TransactionService(repository, accountService);
         dummyTransaction = Transaction.builder()
                 .id(1L)
                 .amount(10000)

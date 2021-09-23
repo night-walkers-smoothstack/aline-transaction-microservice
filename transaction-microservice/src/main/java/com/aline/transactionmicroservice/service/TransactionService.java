@@ -1,5 +1,6 @@
 package com.aline.transactionmicroservice.service;
 
+import com.aline.core.model.account.Account;
 import com.aline.transactionmicroservice.exception.TransactionNotFoundException;
 import com.aline.transactionmicroservice.model.Transaction;
 import com.aline.transactionmicroservice.repository.TransactionRepository;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class TransactionService {
     private final TransactionRepository repository;
+    private final AccountService accountService;
 
     /**
      * Save a transaction into the database
@@ -38,7 +40,26 @@ public class TransactionService {
         return repository.findById(id).orElseThrow(TransactionNotFoundException::new);
     }
 
+    /**
+     * Get all transactions by the account number
+     * @param accountNumber Account number string
+     * @param pageable The pageable object passed in by the controller
+     * @return A page of transactions
+     * @see AccountService#getAccountByAccountNumber(String)
+     */
     public Page<Transaction> getAllTransactionsByAccountNumber(@NonNull String accountNumber, @NonNull Pageable pageable) {
-        return repository.findAllByAccount_AccountNumber(accountNumber, pageable);
+        Account account = accountService.getAccountByAccountNumber(accountNumber);
+        return getAllTransactionsByAccount(account, pageable);
     }
+
+    /**
+     * Get all transactions associated with an account entity
+     * @param account The account entity
+     * @param pageable The pageable object passed in by the calling controller
+     * @return A page of transacitons
+     */
+    public Page<Transaction> getAllTransactionsByAccount(@NonNull Account account, @NonNull Pageable pageable) {
+        return repository.findAllByAccount(account, pageable);
+    }
+
 }
