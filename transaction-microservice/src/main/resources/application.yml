@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: "microservice-template"
+    name: "transaction"
   jpa:
     hibernate:
       ddl-auto: update

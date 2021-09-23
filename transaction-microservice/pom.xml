@@ -12,10 +12,10 @@
     <packaging>jar</packaging>
 
     <groupId>com.aline</groupId>
-    <artifactId>microservice-template</artifactId>
+    <artifactId>transaction-microservice</artifactId>
     <version>0.1.0</version>
-    <name>microservice-template</name>
-    <description>Microservice template project for Aline Financial</description>
+    <name>Transaction Microservice</name>
+    <description>Handles all account transactions such as payments, credits, purchases, etc...</description>
     <properties>
         <java.version>1.8</java.version>
     </properties>

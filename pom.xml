@@ -5,7 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.aline</groupId>
-    <artifactId>aline-microservice-template</artifactId>
+    <artifactId>aline-transaction-microservice</artifactId>
+    <name>Transaction Microservice Root Project</name>
     <version>0.1.0</version>
 
     <packaging>pom</packaging>
@@ -17,7 +18,7 @@
 
     <modules>
         <module>core</module>
-        <module>microservice-template</module>
+        <module>transaction-microservice</module>
     </modules>
     <build>
         <pluginManagement>

@@ -1,4 +1,4 @@
-package com.aline.microservicetemplate;
+package com.aline.transactionmicroservice;
 
 import com.aline.core.annotation.EnableCoreModule;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
@@ -10,15 +10,15 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @EnableCoreModule
 @OpenAPIDefinition(info =
     @Info(
-            title = "Microservice Template",
-            description = "(Update this description) This is a description of your microservice and it's functionality.",
+            title = "Transaction Microservice",
+            description = "Handle all account transaction",
             version = "1.0"
     )
 )
-public class MicroserviceTemplateApplication {
+public class TransactionMicroserviceApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(MicroserviceTemplateApplication.class, args);
+        SpringApplication.run(TransactionMicroserviceApplication.class, args);
     }
 
 }
