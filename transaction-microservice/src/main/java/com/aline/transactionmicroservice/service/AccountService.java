@@ -4,6 +4,7 @@ import com.aline.core.exception.notfound.AccountNotFoundException;
 import com.aline.core.model.account.Account;
 import com.aline.core.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -20,6 +21,17 @@ public class AccountService {
      */
     public Account getAccountByAccountNumber(String accountNumber) {
         return repository.findByAccountNumber(accountNumber).orElseThrow(AccountNotFoundException::new);
+    }
+
+    /**
+     * Get a masked account number (Only the last four will show)
+     * @param accountNumber The raw account number
+     * @return A masked account number string
+     */
+    public String maskAccountNumber(String accountNumber) {
+        return StringUtils.leftPad(accountNumber
+                        .substring(accountNumber.length() - 4),
+                        10, "*");
     }
 
 }

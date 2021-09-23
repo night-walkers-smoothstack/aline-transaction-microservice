@@ -1,11 +1,13 @@
 package com.aline.transactionmicroservice.service;
 
 import com.aline.core.model.account.Account;
+import com.aline.transactionmicroservice.dto.TransactionResponse;
 import com.aline.transactionmicroservice.exception.TransactionNotFoundException;
 import com.aline.transactionmicroservice.model.Transaction;
 import com.aline.transactionmicroservice.repository.TransactionRepository;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Service;
 public class TransactionService {
     private final TransactionRepository repository;
     private final AccountService accountService;
+    private final ModelMapper modelMapper;
 
     /**
      * Save a transaction into the database
@@ -60,6 +63,20 @@ public class TransactionService {
      */
     public Page<Transaction> getAllTransactionsByAccount(@NonNull Account account, @NonNull Pageable pageable) {
         return repository.findAllByAccount(account, pageable);
+    }
+
+    /**
+     * Map a transaction entity to it's DTO type TransactionResponse,
+     * @param transaction The transaction to map
+     * @return The transaction response DTO
+     * @apiNote A TransactionResponse should always be the preferred
+     *          response DTO for a transaction information request.
+     */
+    public TransactionResponse mapToResponse(Transaction transaction) {
+        String accountNumber = transaction.getAccount().getAccountNumber();
+        TransactionResponse response = modelMapper.map(transaction, TransactionResponse.class);
+        response.setAccountNumber(accountService.maskAccountNumber(accountNumber));
+        return response;
     }
 
 }

@@ -5,6 +5,7 @@ import com.aline.transactionmicroservice.model.Transaction;
 import com.aline.transactionmicroservice.repository.TransactionRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.modelmapper.ModelMapper;
 
 import java.time.LocalDateTime;
 
@@ -26,7 +27,7 @@ class TransactionServiceTest {
     void setUp() {
         repository = mock(TransactionRepository.class);
         accountService = mock(AccountService.class);
-        service = new TransactionService(repository, accountService);
+        service = new TransactionService(repository, accountService, new ModelMapper());
         dummyTransaction = Transaction.builder()
                 .id(1L)
                 .amount(10000)

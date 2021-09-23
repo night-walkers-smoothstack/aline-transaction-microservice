@@ -61,7 +61,7 @@ public class Transaction {
      * to the account)</em>
      */
     @NotNull
-    private Integer currentBalance;
+    private Integer initialBalance;
 
     /**
      * The balance actually posted to the account after
