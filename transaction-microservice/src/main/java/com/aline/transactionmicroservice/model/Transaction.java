@@ -49,9 +49,29 @@ public class Transaction {
     @PositiveOrZero
     private Integer amount;
 
+    /**
+     * The account the transaction is being
+     * applied to. (This is very important to include
+     * in the DTO)
+     */
     @NotNull
     @ManyToOne
     private Account account;
+
+    /**
+     * The balance of the account at the time
+     * of the transaction <em>(before anything is applied
+     * to the account)</em>
+     */
+    @NotNull
+    private Integer currentBalance;
+
+    /**
+     * The balance actually posted to the account after
+     * the transaction is applied
+     */
+    @NotNull
+    private Integer postedBalance;
 
     /**
      * The date the transaction was made

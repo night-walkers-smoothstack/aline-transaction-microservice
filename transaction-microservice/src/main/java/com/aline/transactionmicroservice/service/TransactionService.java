@@ -14,10 +14,26 @@ import org.springframework.stereotype.Service;
 public class TransactionService {
     private final TransactionRepository repository;
 
+    /**
+     * Save a transaction into the database
+     * <br>
+     * <strong>
+     *     * This does not affect any accounts associated with it.
+     *      The transaction will not be processed.
+     * </strong>
+     * @param transaction The transaction to save
+     * @return The saved transaction
+     */
     public Transaction save(Transaction transaction) {
         return repository.save(transaction);
     }
 
+    /**
+     * Retrieve a transaction by its ID
+     * @param id The ID of the transaction
+     * @return The retrieved transaction
+     * @throws TransactionNotFoundException if the transaction does not exist
+     */
     public Transaction getTransactionById(long id) {
         return repository.findById(id).orElseThrow(TransactionNotFoundException::new);
     }
