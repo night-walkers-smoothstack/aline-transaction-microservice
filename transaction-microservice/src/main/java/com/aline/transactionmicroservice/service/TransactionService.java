@@ -56,6 +56,17 @@ public class TransactionService {
     }
 
     /**
+     * Get all transaction pages by account ID
+     * @param id The ID of the account being queried for transactions
+     * @param pageable Pageable object passed in by the controller
+     * @return A page of transactions based on the account ID
+     */
+    public Page<Transaction> getAllTransactionsByAccountId(long id, @NonNull Pageable pageable) {
+        Account account = accountService.getAccountById(id);
+        return getAllTransactionsByAccount(account, pageable);
+    }
+
+    /**
      * Get all transactions associated with an account entity
      * @param account The account entity
      * @param pageable The pageable object passed in by the calling controller

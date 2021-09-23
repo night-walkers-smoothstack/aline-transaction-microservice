@@ -9,6 +9,8 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -36,6 +38,15 @@ public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    /**
+     * The transaction method.
+     * <br>
+     * <em>How the transaction was processed</em>
+     */
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private TransactionMethod method;
 
     /**
      * Transaction amount
@@ -69,6 +80,21 @@ public class Transaction {
      */
     @NotNull
     private Integer postedBalance;
+
+    /**
+     * Transaction type specifies whether it
+     * was a purchase, payment, refund, etc...
+     */
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private TransactionType type;
+
+    /**
+     * Transaction status (ACTIVE, PENDING, DENIED)
+     */
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private TransactionStatus status;
 
     /**
      * The date the transaction was made

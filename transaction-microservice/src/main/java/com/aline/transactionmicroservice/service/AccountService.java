@@ -24,6 +24,16 @@ public class AccountService {
     }
 
     /**
+     * Get an account by the ID
+     * @param id The ID of the account
+     * @return An account associated with the specified ID
+     * @throws AccountNotFoundException when the accound does not exist
+     */
+    public Account getAccountById(long id) {
+        return repository.findById(id).orElseThrow(AccountNotFoundException::new);
+    }
+
+    /**
      * Get a masked account number (Only the last four will show)
      * @param accountNumber The raw account number
      * @return A masked account number string
