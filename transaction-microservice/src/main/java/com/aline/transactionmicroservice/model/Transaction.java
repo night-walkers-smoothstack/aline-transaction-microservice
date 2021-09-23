@@ -11,9 +11,11 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PositiveOrZero;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
@@ -26,7 +28,8 @@ import java.util.Objects;
 @AllArgsConstructor
 @Getter
 @Setter
-public class Transaction {
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+public abstract class Transaction {
 
     /**
      * Transaction ID
@@ -48,7 +51,7 @@ public class Transaction {
      * The date the transaction was made
      */
     @CreationTimestamp
-    private Date date;
+    private LocalDateTime date;
 
     @Override
     public boolean equals(Object o) {
