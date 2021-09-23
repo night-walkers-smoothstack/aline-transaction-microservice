@@ -1,5 +1,6 @@
 package com.aline.transactionmicroservice.model;
 
+import com.aline.core.model.account.Account;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -14,6 +15,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
@@ -24,13 +26,12 @@ import java.util.Objects;
  * account.
  */
 @Entity
-@SuperBuilder
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-public abstract class Transaction {
+public class Transaction {
 
     /**
      * Transaction ID
@@ -47,6 +48,10 @@ public abstract class Transaction {
     @NotNull
     @PositiveOrZero
     private Integer amount;
+
+    @NotNull
+    @ManyToOne
+    private Account account;
 
     /**
      * The date the transaction was made
