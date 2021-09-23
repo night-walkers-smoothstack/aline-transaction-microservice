@@ -37,4 +37,8 @@ values (1, 1),
        (1, 2),
        (2, 3);
 
+insert into transaction (id, amount, date, account_id, initial_balance, posted_balance)
+values (1, 10000, '2021-08-01', 1, 100000, 90000);
 
+insert into transaction (id, amount, date, account_id, initial_balance, posted_balance)
+values (2, 10000, '2021-08-01', 1, 90000, 80000);
