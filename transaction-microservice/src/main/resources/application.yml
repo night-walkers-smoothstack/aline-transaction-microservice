@@ -28,7 +28,6 @@ app:
     secret-key: "${ENCRYPT_SECRET_KEY}"
     jwt:
       secret-key: "${JWT_SECRET_KEY}"
-    disable-web-security: true # Remove to enable web security
   aws:
     email:
       template-bucket-name: "aline-email-templates"
