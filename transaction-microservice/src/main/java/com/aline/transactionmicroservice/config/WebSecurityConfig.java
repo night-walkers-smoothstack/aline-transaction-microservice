@@ -8,6 +8,5 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 public class WebSecurityConfig extends AbstractWebSecurityConfig {
     @Override
     protected void configureHttp(HttpSecurity http) {
-
     }
 }

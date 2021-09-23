@@ -13,7 +13,7 @@ public class RootController {
     /**
      * Health Check endpoint
      */
-    @GetMapping
+    @GetMapping("/health")
     @ResponseStatus(HttpStatus.OK)
     public void healthCheck() {}
 
