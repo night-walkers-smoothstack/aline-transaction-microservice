@@ -28,4 +28,11 @@ public class AccountController {
         return transactionsPage.map(service::mapToResponse);
     }
 
+    @GetMapping(value = "/account-number/{accountNumber}/transactions", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    public Page<TransactionResponse> getAllTransactionsByAccountId(@PathVariable String accountNumber, Pageable pageable) {
+        Page<Transaction> transactionsPage = service.getAllTransactionsByAccountNumber(accountNumber, pageable);
+        return transactionsPage.map(service::mapToResponse);
+    }
+
 }

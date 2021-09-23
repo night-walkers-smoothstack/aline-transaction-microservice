@@ -37,8 +37,8 @@ values (1, 1),
        (1, 2),
        (2, 3);
 
-insert into transaction (id, method, amount, date, account_id, initial_balance, posted_balance)
-values (1, 'ACH', 10000, '2021-08-01', 1, 100000, 90000);
+insert into transaction (id, type, method, amount, date, account_id, initial_balance, posted_balance, status)
+values (1, 'WITHDRAWAL', 'ACH', 10000, '2021-08-01', 1, 100000, 90000, 'APPROVED');
 
-insert into transaction (id, method, amount, date, account_id, initial_balance, posted_balance)
-values (2, 'CARD', 10000, '2021-08-01', 1, 90000, 80000);
+insert into transaction (id, type, method, amount, date, account_id, initial_balance, posted_balance, status)
+values (2, 'PURCHASE', 'CARD', 10000, '2021-08-01', 1, 90000, 80000, 'APPROVED');
