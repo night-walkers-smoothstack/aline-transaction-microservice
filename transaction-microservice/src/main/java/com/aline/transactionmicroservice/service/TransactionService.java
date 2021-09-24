@@ -1,6 +1,7 @@
 package com.aline.transactionmicroservice.service;
 
 import com.aline.core.model.account.Account;
+import com.aline.core.security.annotation.RoleIsManagement;
 import com.aline.transactionmicroservice.dto.TransactionResponse;
 import com.aline.transactionmicroservice.exception.TransactionNotFoundException;
 import com.aline.transactionmicroservice.model.Transaction;
@@ -10,8 +11,14 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+/**
+ * Transaction service provides secured methods
+ * that access a member's transactions.
+ */
 @Service
 @RequiredArgsConstructor
 public class TransactionService {
@@ -39,6 +46,7 @@ public class TransactionService {
      * @return The retrieved transaction
      * @throws TransactionNotFoundException if the transaction does not exist
      */
+    @PostAuthorize("@authService.canAccessById(#id)")
     public Transaction getTransactionById(long id) {
         return repository.findById(id).orElseThrow(TransactionNotFoundException::new);
     }
@@ -50,6 +58,7 @@ public class TransactionService {
      * @return A page of transactions
      * @see AccountService#getAccountByAccountNumber(String)
      */
+    @PreAuthorize("@authService.canAccessByAccountNumber(#accountNumber)")
     public Page<Transaction> getAllTransactionsByAccountNumber(@NonNull String accountNumber, @NonNull Pageable pageable) {
         Account account = accountService.getAccountByAccountNumber(accountNumber);
         return getAllTransactionsByAccount(account, pageable);
@@ -61,6 +70,7 @@ public class TransactionService {
      * @param pageable Pageable object passed in by the controller
      * @return A page of transactions based on the account ID
      */
+    @PreAuthorize("@authService.canAccessByAccountId(#id)")
     public Page<Transaction> getAllTransactionsByAccountId(long id, @NonNull Pageable pageable) {
         Account account = accountService.getAccountById(id);
         return getAllTransactionsByAccount(account, pageable);
