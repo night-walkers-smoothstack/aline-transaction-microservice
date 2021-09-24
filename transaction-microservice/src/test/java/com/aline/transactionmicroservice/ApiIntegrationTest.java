@@ -62,6 +62,14 @@ class ApiIntegrationTest {
         mockMvc.perform(get("/members/{id}/transactions", 1))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.content.length()").value(4));
+    }
+
+    @Test
+    void test_getAllTransactionsByMemberId_status_isOk_memberIsSpouse() throws Exception {
+        mockMvc.perform(get("/members/{id}/transactions", 3))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.content.length()").value(3));
     }
 

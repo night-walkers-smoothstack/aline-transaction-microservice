@@ -10,5 +10,6 @@ import lombok.RequiredArgsConstructor;
 public enum TransactionMethod {
     ACH,
     ATM,
-    CARD
+    CARD,
+    APP
 }

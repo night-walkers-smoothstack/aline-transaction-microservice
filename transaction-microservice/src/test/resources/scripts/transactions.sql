@@ -68,3 +68,6 @@ values (5, 'DEPOSIT', 'ACH', 500000, '2021-08-01', 1, 1300000, 80000, 'APPROVED'
 
 insert into transaction (id, type, method, amount, date, account_id, initial_balance, posted_balance, status)
 values (6, 'WITHDRAWAL', 'ACH', 500000, '2021-08-01', 3, 1800000, 1300000, 'APPROVED');
+
+insert into transaction (id, type, method, amount, date, account_id, initial_balance, posted_balance, status)
+values (7, 'TRANSFER', 'APP', 500000, '2021-08-01', 2, 1300000, 80000, 'APPROVED');
