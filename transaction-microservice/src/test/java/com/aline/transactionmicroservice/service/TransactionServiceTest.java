@@ -20,6 +20,7 @@ class TransactionServiceTest {
 
     TransactionRepository repository;
     AccountService accountService;
+    MemberService memberService;
     TransactionService service;
     Transaction dummyTransaction;
 
@@ -27,7 +28,8 @@ class TransactionServiceTest {
     void setUp() {
         repository = mock(TransactionRepository.class);
         accountService = mock(AccountService.class);
-        service = new TransactionService(repository, accountService, new ModelMapper());
+        memberService = mock(MemberService.class);
+        service = new TransactionService(repository, accountService, memberService, new ModelMapper());
         dummyTransaction = Transaction.builder()
                 .id(1L)
                 .amount(10000)

@@ -1,7 +1,7 @@
 package com.aline.transactionmicroservice.service;
 
+import com.aline.core.model.Member;
 import com.aline.core.model.account.Account;
-import com.aline.core.security.annotation.RoleIsManagement;
 import com.aline.transactionmicroservice.dto.TransactionResponse;
 import com.aline.transactionmicroservice.exception.TransactionNotFoundException;
 import com.aline.transactionmicroservice.model.Transaction;
@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 public class TransactionService {
     private final TransactionRepository repository;
     private final AccountService accountService;
+    private final MemberService memberService;
     private final ModelMapper modelMapper;
 
     /**
@@ -77,6 +78,18 @@ public class TransactionService {
     }
 
     /**
+     * Get all transactions by member ID
+     * @param memberId The ID of the member
+     * @param pageable Pageable object padded in by the controller
+     * @return A page of transactions based on the supplied member ID
+     */
+    @PreAuthorize("@authService.canAccessByMemberId(#memberId)")
+    public Page<Transaction> getAllTransactionsByMemberId(long memberId, @NonNull Pageable pageable) {
+        Member member = memberService.getMemberById(memberId);
+        return getAllTransactionsByMember(member, pageable);
+    }
+
+    /**
      * Get all transactions associated with an account entity
      * @param account The account entity
      * @param pageable The pageable object passed in by the calling controller
@@ -84,6 +97,10 @@ public class TransactionService {
      */
     public Page<Transaction> getAllTransactionsByAccount(@NonNull Account account, @NonNull Pageable pageable) {
         return repository.findAllByAccount(account, pageable);
+    }
+
+    public Page<Transaction> getAllTransactionsByMember(@NonNull Member member, @NonNull Pageable pageable) {
+        return repository.findAllByMember(member, pageable);
     }
 
     /**
