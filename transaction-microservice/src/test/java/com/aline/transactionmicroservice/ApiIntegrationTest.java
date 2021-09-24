@@ -46,7 +46,7 @@ class ApiIntegrationTest {
                         "0011011234"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.content.length()").value(2));
+                .andExpect(jsonPath("$.content.length()").value(3));
     }
 
     @Test
@@ -54,7 +54,7 @@ class ApiIntegrationTest {
         mockMvc.perform(get("/accounts/{id}/transactions", 1))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.content.length()").value(2));
+                .andExpect(jsonPath("$.content.length()").value(3));
     }
 
     @Test
@@ -62,7 +62,7 @@ class ApiIntegrationTest {
         mockMvc.perform(get("/members/{id}/transactions", 1))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.content.length()").value(2));
+                .andExpect(jsonPath("$.content.length()").value(3));
     }
 
 }

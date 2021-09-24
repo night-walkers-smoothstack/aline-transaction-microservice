@@ -13,7 +13,7 @@ insert into applicant (id, address, city, created_at, date_of_birth, drivers_lic
                        middle_name, phone, social_security, state, zipcode)
 values (3, '123 Little Blvd', 'City', '2021-08-06', '1997-07-02', 'DC845454', 'test_woman@email.com',
         'Test', 'FEMALE', 30000000,  '2021-08-21', 'Woman', '123 Little Blvd', 'City', 'Maine', '12345',
-        'The', '(555) 888-8888', '888-88-8889', 'Maine', '12345');
+        'The', '(555) 888-8889', '888-88-8889', 'Maine', '12345');
 
 insert into member (id, membership_id, applicant_id, branch_id)
 values (1, '12345678', 1, 1);
