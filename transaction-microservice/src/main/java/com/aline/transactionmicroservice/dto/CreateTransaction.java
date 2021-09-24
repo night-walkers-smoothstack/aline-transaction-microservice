@@ -18,13 +18,12 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class TransactionRequest {
+public class CreateTransaction {
 
     private TransactionType type;
     private TransactionMethod method;
     private int amount;
     private TransactionStatus status;
     private String merchantCode;
-    private String merchantName;
 
 }
