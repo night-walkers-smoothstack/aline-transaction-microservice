@@ -5,6 +5,7 @@ import com.aline.transactionmicroservice.exception.MerchantNotFoundException;
 import com.aline.transactionmicroservice.model.Merchant;
 import com.aline.transactionmicroservice.repository.MerchantRepository;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.security.PermitAll;
@@ -23,15 +24,27 @@ import javax.validation.Valid;
 public class MerchantService {
 
     private MerchantRepository repository;
+    private ModelMapper mapper;
 
+    /**
+     * Get Merchant by merchant code
+     * @param code The merchant code
+     * @return A Merchant with the specified code
+     */
     @PermitAll
     public Merchant getMerchantByCode(String code) {
         return repository.findById(code).orElseThrow(MerchantNotFoundException::new);
     }
 
-    public Merchant autoCreateMerchant(@Valid CreateMerchant merchant) {
-        // TODO: Implement create simple merchant
-        return null;
+    /**
+     * Register a merchant
+     * @param createMerchant    The CreateMerchant DTO is used to save
+     *                          a merchant in our database for reuse.
+     * @return The saved Merchant entity
+     */
+    public Merchant registerMerchant(@Valid CreateMerchant createMerchant) {
+        Merchant merchant = mapper.map(createMerchant, Merchant.class);
+        return repository.save(merchant);
     }
 
 }

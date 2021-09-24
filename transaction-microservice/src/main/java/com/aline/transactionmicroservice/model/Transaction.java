@@ -117,6 +117,11 @@ public class Transaction {
     @CreationTimestamp
     private LocalDateTime date;
 
+    /**
+     * The last time the transaction was modified
+     */
+    private LocalDateTime lastModified;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

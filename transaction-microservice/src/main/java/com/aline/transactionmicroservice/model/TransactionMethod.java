@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 public enum TransactionMethod {
     ACH,
     ATM,
-    CARD,
+    CREDIT_CARD,
+    DEBIT_CARD,
     APP
 }

@@ -1,8 +1,14 @@
 package com.aline.transactionmicroservice.service;
 
+import com.aline.transactionmicroservice.dto.CreateTransaction;
+import com.aline.transactionmicroservice.dto.Receipt;
+import com.aline.transactionmicroservice.model.Transaction;
 import com.aline.transactionmicroservice.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+
+import javax.validation.Valid;
 
 /**
  * Post transaction service handles the processing
@@ -19,5 +25,11 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class PostTransactionService {
     private final TransactionRepository repository;
+    private final ModelMapper mapper;
+
+    public Receipt createTransaction(@Valid CreateTransaction createTransaction) {
+        Transaction transaction = mapper.map(createTransaction, Transaction.class);
+        return null;
+    }
 
 }

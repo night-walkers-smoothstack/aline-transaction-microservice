@@ -20,10 +20,53 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CreateTransaction {
 
+    /**
+     * The type of transaction.
+     * Specifies whether it was a purchase, payment,
+     * refund, etc...
+     */
     private TransactionType type;
+
+    /**
+     * The method the transaction used whether
+     * it was through a credit card or ACH.
+     */
     private TransactionMethod method;
+
+    /**
+     * The amount of the transaction in cents.
+     */
     private int amount;
+
+    /**
+     * The initial status of the transaction.
+     */
     private TransactionStatus status;
+
+    /**
+     * The merchant this transaction was
+     * made to (This is only required if the
+     * transaction was a purchase, deposit, refund,
+     * payment, or void).
+     * @see TransactionType
+     */
     private String merchantCode;
+
+    /**
+     * Description of the transaction
+     */
+    private String description;
+
+    /**
+     * Card number is required if account number
+     * is not specified.
+     */
+    private String cardNumber;
+
+    /**
+     * Account number is required if card number
+     * is not specified.
+     */
+    private String accountNumber;
 
 }
