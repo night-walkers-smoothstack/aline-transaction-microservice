@@ -12,6 +12,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * A merchant is an entity that receives or
@@ -28,7 +29,7 @@ public class Merchant {
      * The merchant code used to identify a merchant
      */
     @Id
-    @Length(min = 4, max = 4)
+    @Length(min = 4, max = 8)
     private String code;
 
     /**
@@ -60,4 +61,16 @@ public class Merchant {
     @CreationTimestamp
     private LocalDateTime registeredAt;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Merchant merchant = (Merchant) o;
+        return code.equals(merchant.code);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(code);
+    }
 }
