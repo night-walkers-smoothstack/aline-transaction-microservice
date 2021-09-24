@@ -1,6 +1,7 @@
 package com.aline.transactionmicroservice;
 
 import com.aline.core.annotation.test.SpringBootIntegrationTest;
+import com.aline.core.annotation.test.SpringTestProperties;
 import com.aline.transactionmicroservice.exception.TransactionNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootIntegrationTest
+@SpringBootIntegrationTest(SpringTestProperties.DISABLE_WEB_SECURITY)
 @Sql(scripts = "classpath:scripts/transactions.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @Transactional
 class TransactionApiIntegrationTest {
