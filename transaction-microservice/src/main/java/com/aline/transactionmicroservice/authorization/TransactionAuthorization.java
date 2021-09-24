@@ -93,4 +93,19 @@ public class TransactionAuthorization extends AbstractAuthorizationService<Trans
         }
         return roleIsManagement();
     }
+
+    /**
+     * Can access by member ID
+     * @param memberId The member ID
+     * @return  True if the transaction is applied to an account
+     *          that belongs to the member with the specified ID.
+     */
+    public boolean canAccessByMemberId(long memberId) {
+        if (getRole() == UserRole.MEMBER) {
+            MemberUser user = (MemberUser) getUser();
+            Member member = user.getMember();
+            return member.getId() == memberId;
+        }
+        return roleIsManagement();
+    }
 }
