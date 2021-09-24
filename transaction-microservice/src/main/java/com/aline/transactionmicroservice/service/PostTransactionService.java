@@ -20,5 +20,4 @@ import org.springframework.stereotype.Service;
 public class PostTransactionService {
     private final TransactionRepository repository;
 
-
 }
