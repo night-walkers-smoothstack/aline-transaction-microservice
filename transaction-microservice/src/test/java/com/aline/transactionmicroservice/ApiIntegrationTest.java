@@ -19,7 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootIntegrationTest(SpringTestProperties.DISABLE_WEB_SECURITY)
 @Sql(scripts = "classpath:scripts/transactions.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @Transactional
-class TransactionApiIntegrationTest {
+class ApiIntegrationTest {
 
     @Autowired
     MockMvc mockMvc;

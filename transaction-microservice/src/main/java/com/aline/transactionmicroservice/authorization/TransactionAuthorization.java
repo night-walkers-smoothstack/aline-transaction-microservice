@@ -51,7 +51,6 @@ public class TransactionAuthorization extends AbstractAuthorizationService<Trans
      */
     public boolean canAccessById(long id) {
         if (getRole() == UserRole.MEMBER) {
-            MemberUser user = (MemberUser) getUser();
             Account account = accountService.getAccountById(id);
             Transaction transaction = repository.findById(id).orElseThrow(TransactionNotFoundException::new);
             return transaction.getAccount().equals(account);

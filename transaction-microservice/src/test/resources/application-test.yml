@@ -23,3 +23,5 @@ spring:
 app:
   security:
     secret-key: "ThisIsAGreatSecretKey!!!"
+    jwt:
+      secret-key: "ThisIsAJWTSecretKeyForAuthentication"
