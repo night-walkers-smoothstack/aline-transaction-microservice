@@ -27,7 +27,9 @@ public class TransactionResponse {
     private String accountNumber;
     private String initialBalance;
     private String postedBalance;
-    private LocalDateTime date;
     private TransactionType type;
     private TransactionStatus status;
+    private String description;
+    private MerchantResponse merchant;
+    private LocalDateTime date;
 }

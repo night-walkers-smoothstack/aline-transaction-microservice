@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -14,6 +15,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PositiveOrZero;
@@ -63,7 +65,7 @@ public class Transaction {
      * in the DTO)
      */
     @NotNull
-    @ManyToOne
+    @ManyToOne(optional = false)
     private Account account;
 
     /**
@@ -95,6 +97,19 @@ public class Transaction {
     @NotNull
     @Enumerated(EnumType.STRING)
     private TransactionStatus status;
+
+    /**
+     * Description of the transaction
+     */
+    @Length(max = 255)
+    private String description;
+
+    /**
+     * Non-option merchant
+     */
+    @NotNull
+    @ManyToOne(optional = false)
+    private Merchant merchant;
 
     /**
      * The date the transaction was made
