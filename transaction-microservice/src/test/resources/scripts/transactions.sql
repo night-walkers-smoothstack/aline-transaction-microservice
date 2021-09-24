@@ -18,7 +18,7 @@ insert into user (role, id, enabled, password, username, member_id)
 values ('MEMBER', 1, 1, 'P@ssword123', 'test_boy', 1);
 
 insert into user (role, id, enabled, password, username, member_id)
-values ('ROLE', 2, 1, 'P@ssword123', 'test_man', 2);
+values ('ADMINISTRATOR', 2, 1, 'P@ssword123', 'test_man', 2);
 
 insert into account (account_type, id, account_number, balance, status, available_balance,
                      primary_account_holder_id)
