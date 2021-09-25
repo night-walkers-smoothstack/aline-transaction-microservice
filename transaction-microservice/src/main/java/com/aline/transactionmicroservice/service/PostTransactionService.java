@@ -102,8 +102,10 @@ public class PostTransactionService {
     /**
      * Apply transaction increase or decrease balance to the
      * account attached to the transaction. The transaction will
-     * only be performed if it has been approved. Otherwise, nothing
-     * will happen.
+     * only be performed if it has been approved.
+     * <br>
+     * If status is pending and the account is a checking account
+     * then the available balance will be updated.
      * @param transaction The transaction to perform
      */
     public void performTransaction(Transaction transaction) {
