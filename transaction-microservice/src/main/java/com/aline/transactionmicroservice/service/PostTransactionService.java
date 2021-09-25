@@ -93,9 +93,11 @@ public class PostTransactionService {
         // Check that the transaction is initialized
         if (!transaction.isInitialized()) throw new UnprocessableException("Transaction is not initialized. Unable to process transaction.");
 
-
-
         return null;
+    }
+
+    public void performTransaction(Transaction transaction) {
+
     }
 
 }
