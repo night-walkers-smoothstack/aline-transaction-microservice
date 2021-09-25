@@ -4,6 +4,8 @@ import com.aline.core.exception.BadRequestException;
 import com.aline.core.exception.UnprocessableException;
 import com.aline.core.exception.notfound.AccountNotFoundException;
 import com.aline.core.model.account.Account;
+import com.aline.core.model.account.AccountType;
+import com.aline.core.model.account.CheckingAccount;
 import com.aline.transactionmicroservice.dto.CreateTransaction;
 import com.aline.transactionmicroservice.dto.Receipt;
 import com.aline.transactionmicroservice.model.Merchant;
@@ -12,6 +14,7 @@ import com.aline.transactionmicroservice.model.TransactionStatus;
 import com.aline.transactionmicroservice.model.TransactionType;
 import com.aline.transactionmicroservice.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.val;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -98,7 +101,9 @@ public class PostTransactionService {
 
     /**
      * Apply transaction increase or decrease balance to the
-     * account attached to the transaction.
+     * account attached to the transaction. The transaction will
+     * only be performed if it has been approved. Otherwise, nothing
+     * will happen.
      * @param transaction The transaction to perform
      */
     public void performTransaction(Transaction transaction) {
@@ -114,7 +119,20 @@ public class PostTransactionService {
             } else if (isDecreasing && !isIncreasing) {
                 account.decreaseBalance(amount);
             }
+
+        } else if (transaction.getStatus() == TransactionStatus.PENDING) {
+            if (account.getAccountType() == AccountType.CHECKING) {
+                val checkingAccount = (CheckingAccount) account;
+                if (isIncreasing && !isDecreasing) {
+                    checkingAccount.increaseAvailableBalance(amount);
+                } else if (isDecreasing && !isIncreasing) {
+                    checkingAccount.decreaseAvailableBalance(amount);
+                }
+                transaction.setPostedBalance(checkingAccount.getAvailableBalance());
+            }
         }
+
+        transaction.setPostedBalance(account.getBalance());
 
     }
 

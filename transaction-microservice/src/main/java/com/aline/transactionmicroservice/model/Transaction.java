@@ -109,7 +109,6 @@ public class Transaction {
     /**
      * Non-option merchant
      */
-    @NotNull
     @ManyToOne(optional = false)
     private Merchant merchant;
 
