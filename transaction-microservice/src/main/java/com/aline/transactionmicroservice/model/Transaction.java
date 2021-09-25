@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.Entity;
@@ -17,6 +18,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.PostLoad;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
@@ -120,7 +123,61 @@ public class Transaction {
     /**
      * The last time the transaction was modified
      */
+    @UpdateTimestamp
     private LocalDateTime lastModified;
+
+    /**
+     * Will be false until the transaction is
+     * created in {@link com.aline.transactionmicroservice.service.PostTransactionService}
+     */
+    private boolean initialized;
+
+    /**
+     * True if the transaction increases the account balance
+     */
+    @Transient
+    private boolean increasing;
+
+    /**
+     * True if the transaction decreases the account balance
+     */
+    @Transient
+    private boolean decreasing;
+
+    @PostLoad
+    public void setIncreaseDecrease() {
+
+        // If amount is <= 0, then it will neither be increase nor decrease
+        if (amount <= 0) {
+            increasing = false;
+            decreasing = false;
+            return;
+        }
+
+        // Set increase decrease based on transaction type
+        switch (type) {
+            case WITHDRAWAL:
+            case PURCHASE:
+            case PAYMENT:
+            case TRANSFER_OUT:
+                increasing = false;
+                decreasing = true;
+                break;
+            case DEPOSIT:
+            case REFUND:
+            case TRANSFER_IN:
+                increasing = true;
+                decreasing = false;
+                break;
+            // Regardless of the amount, if the transaction is void,
+            // then it will not increase or decrease
+            case VOID:
+                increasing = false;
+                decreasing = false;
+                break;
+        }
+
+    }
 
     @Override
     public boolean equals(Object o) {

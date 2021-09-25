@@ -6,7 +6,8 @@ package com.aline.transactionmicroservice.model;
 public enum TransactionType {
     DEPOSIT,
     WITHDRAWAL,
-    TRANSFER,
+    TRANSFER_IN,
+    TRANSFER_OUT,
     PURCHASE,
     PAYMENT,
     REFUND,
