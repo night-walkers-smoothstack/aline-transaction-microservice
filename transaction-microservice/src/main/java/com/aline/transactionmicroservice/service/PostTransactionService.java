@@ -96,7 +96,25 @@ public class PostTransactionService {
         return null;
     }
 
+    /**
+     * Apply transaction increase or decrease balance to the
+     * account attached to the transaction.
+     * @param transaction The transaction to perform
+     */
     public void performTransaction(Transaction transaction) {
+        boolean isIncreasing = transaction.isIncreasing();
+        boolean isDecreasing = transaction.isDecreasing();
+        int amount = transaction.getAmount();
+
+        Account account = transaction.getAccount();
+
+        if (transaction.getStatus() == TransactionStatus.APPROVED) {
+            if (isIncreasing && !isDecreasing) {
+                account.increaseBalance(amount);
+            } else if (isDecreasing && !isIncreasing) {
+                account.decreaseBalance(amount);
+            }
+        }
 
     }
 

@@ -11,6 +11,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import javax.transaction.Transactional;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -23,6 +24,20 @@ class ApiIntegrationTest {
 
     @Autowired
     MockMvc mockMvc;
+
+    @Autowired
+    TransactionMicroserviceApplication application;
+
+    @Test
+    void contextLoads() {
+        assertNotNull(application);
+    }
+
+    @Test
+    void healthCheckTest() throws Exception {
+        mockMvc.perform(get("/health"))
+                .andExpect(status().isOk());
+    }
 
     @Test
     void test_getTransactionById_status_isOk_when_transactionExists() throws Exception {
