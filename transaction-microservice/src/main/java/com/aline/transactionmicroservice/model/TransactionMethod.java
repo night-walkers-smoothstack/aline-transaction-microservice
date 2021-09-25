@@ -1,6 +1,5 @@
 package com.aline.transactionmicroservice.model;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
