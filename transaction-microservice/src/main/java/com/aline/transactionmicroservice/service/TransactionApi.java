@@ -9,6 +9,8 @@ import com.aline.core.model.account.CheckingAccount;
 import com.aline.transactionmicroservice.dto.CreateTransaction;
 import com.aline.transactionmicroservice.dto.MerchantResponse;
 import com.aline.transactionmicroservice.dto.Receipt;
+import com.aline.transactionmicroservice.exception.TransactionNotFoundException;
+import com.aline.transactionmicroservice.exception.TransactionPostedException;
 import com.aline.transactionmicroservice.model.Merchant;
 import com.aline.transactionmicroservice.model.Transaction;
 import com.aline.transactionmicroservice.model.TransactionState;
@@ -197,6 +199,18 @@ public class TransactionApi {
         // If the status is still pending after all checks
         if (transaction.getStatus() == TransactionStatus.PENDING)
             approveTransaction(transaction);
+    }
+
+
+    /**
+     * Delete transaction by its ID
+     * @param id The ID of the transaction to delete
+     */
+    public void deleteTransactionById(long id) {
+        Transaction transaction = repository.findById(id).orElseThrow(TransactionNotFoundException::new);
+        if (transaction.getState() != TransactionState.POSTED) {
+            repository.delete(transaction);
+        } else throw new TransactionPostedException();
     }
 
 }
