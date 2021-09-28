@@ -44,4 +44,12 @@ public class AccountService {
                         10, "*");
     }
 
+    /**
+     * Save an account entity
+     * @param account The account to save
+     */
+    public void saveAccount(Account account) {
+        repository.save(account);
+    }
+
 }

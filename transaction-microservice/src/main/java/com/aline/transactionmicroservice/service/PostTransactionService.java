@@ -96,6 +96,16 @@ public class PostTransactionService {
         // Check that the transaction is initialized
         if (!transaction.isInitialized()) throw new UnprocessableException("Transaction is not initialized. Unable to process transaction.");
 
+        // Perform the passed transaction
+        performTransaction(transaction);
+
+        val receiptBuilder = Receipt.builder()
+                .type(transaction.getType())
+                .method(transaction.getMethod())
+                .amount(transaction.getAmount())
+                .description(transaction.getDescription())
+                .status(transaction.getStatus());
+
         return null;
     }
 
@@ -115,6 +125,7 @@ public class PostTransactionService {
 
         Account account = transaction.getAccount();
 
+        // If transaction is approved, decrease actual balance
         if (transaction.getStatus() == TransactionStatus.APPROVED) {
             if (isIncreasing && !isDecreasing) {
                 account.increaseBalance(amount);
@@ -123,6 +134,8 @@ public class PostTransactionService {
             }
 
         } else if (transaction.getStatus() == TransactionStatus.PENDING) {
+
+            // If transaction is pending and account is checking, decrease available balance
             if (account.getAccountType() == AccountType.CHECKING) {
                 val checkingAccount = (CheckingAccount) account;
                 if (isIncreasing && !isDecreasing) {
@@ -136,6 +149,8 @@ public class PostTransactionService {
 
         transaction.setPostedBalance(account.getBalance());
 
+        // Save transaction
+        repository.save(transaction);
     }
 
 }

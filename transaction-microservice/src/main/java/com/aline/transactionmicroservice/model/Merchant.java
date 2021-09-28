@@ -4,7 +4,9 @@ import com.aline.core.validation.annotation.Address;
 import com.aline.core.validation.annotation.Zipcode;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.validator.constraints.Length;
 
@@ -21,6 +23,8 @@ import java.util.Objects;
  */
 @Entity
 @Builder
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class Merchant {

@@ -23,8 +23,8 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 public class MerchantService {
 
-    private MerchantRepository repository;
-    private ModelMapper mapper;
+    private final MerchantRepository repository;
+    private final ModelMapper mapper;
 
     /**
      * Get Merchant by merchant code
@@ -45,6 +45,23 @@ public class MerchantService {
     public Merchant registerMerchant(@Valid CreateMerchant createMerchant) {
         Merchant merchant = mapper.map(createMerchant, Merchant.class);
         return repository.save(merchant);
+    }
+
+    /**
+     * Check if merchant exists, otherwise create a new one.
+     * @param merchantCode The merchant code entity to check
+     * @return Either an existing or a new merchant
+     */
+    @PermitAll
+    public Merchant checkMerchant(String merchantCode, String merchantName) {
+        return repository.findById(merchantCode)
+                .orElseGet(() -> {
+                    CreateMerchant createMerchant = CreateMerchant.builder()
+                            .code(merchantCode)
+                            .name(merchantName)
+                            .build();
+                    return registerMerchant(createMerchant);
+                });
     }
 
 }
