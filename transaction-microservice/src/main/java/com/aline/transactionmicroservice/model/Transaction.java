@@ -18,6 +18,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.PostLoad;
+import javax.persistence.PostPersist;
+import javax.persistence.PostUpdate;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PositiveOrZero;
@@ -48,7 +52,7 @@ public class Transaction {
      * <br>
      * <em>How the transaction was processed</em>
      */
-    @NotNull
+    @NotNull(message = "Transaction method is required.")
     @Enumerated(EnumType.STRING)
     private TransactionMethod method;
 
@@ -57,7 +61,7 @@ public class Transaction {
      * <br>
      * <em>Represented in cents. (Integer instead of float)</em>
      */
-    @NotNull
+    @NotNull(message = "Transaction amount is required.")
     @PositiveOrZero
     private Integer amount;
 
@@ -66,7 +70,7 @@ public class Transaction {
      * applied to. (This is very important to include
      * in the DTO)
      */
-    @NotNull
+    @NotNull(message = "An account is required.")
     @ManyToOne(optional = false)
     private Account account;
 
@@ -75,30 +79,36 @@ public class Transaction {
      * of the transaction <em>(before anything is applied
      * to the account)</em>
      */
-    @NotNull
+    @NotNull(message = "The account initial balance is required.")
     private Integer initialBalance;
 
     /**
      * The balance actually posted to the account after
      * the transaction is applied
      */
-    @NotNull
     private Integer postedBalance;
 
     /**
      * Transaction type specifies whether it
      * was a purchase, payment, refund, etc...
      */
-    @NotNull
+    @NotNull(message = "Transaction type is required.")
     @Enumerated(EnumType.STRING)
     private TransactionType type;
 
     /**
      * Transaction status (ACTIVE, PENDING, DENIED)
      */
-    @NotNull
+    @NotNull(message = "Transaction status is required.")
     @Enumerated(EnumType.STRING)
     private TransactionStatus status;
+
+    /**
+     * The state the transaction is currently in
+     */
+    @NotNull(message = "Transaction state is required.")
+    @Enumerated(EnumType.STRING)
+    private TransactionState state;
 
     /**
      * Description of the transaction
@@ -109,7 +119,7 @@ public class Transaction {
     /**
      * Non-option merchant
      */
-    @ManyToOne(optional = false)
+    @ManyToOne
     private Merchant merchant;
 
     /**
@@ -123,12 +133,6 @@ public class Transaction {
      */
     @UpdateTimestamp
     private LocalDateTime lastModified;
-
-    /**
-     * Will be false until the transaction is
-     * created in {@link com.aline.transactionmicroservice.service.PostTransactionService}
-     */
-    private boolean initialized;
 
     /**
      * True if the transaction increases the account balance
@@ -149,6 +153,10 @@ public class Transaction {
     private boolean merchantTransaction;
 
     @PostLoad
+    @PrePersist
+    @PostPersist
+    @PreUpdate
+    @PostUpdate
     public void checkTransaction() {
 
         // Check if transaction was requested by a merchant

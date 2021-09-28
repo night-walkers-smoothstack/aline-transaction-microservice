@@ -11,6 +11,7 @@ import com.aline.transactionmicroservice.dto.MerchantResponse;
 import com.aline.transactionmicroservice.dto.Receipt;
 import com.aline.transactionmicroservice.model.Merchant;
 import com.aline.transactionmicroservice.model.Transaction;
+import com.aline.transactionmicroservice.model.TransactionState;
 import com.aline.transactionmicroservice.model.TransactionStatus;
 import com.aline.transactionmicroservice.model.TransactionType;
 import com.aline.transactionmicroservice.repository.TransactionRepository;
@@ -35,8 +36,7 @@ import javax.validation.Valid;
  */
 @Service
 @RequiredArgsConstructor
-public class PostTransactionService {
-    private final TransactionService service;
+public class TransactionApi {
     private final AccountService accountService;
     private final MerchantService merchantService;
     private final TransactionRepository repository;
@@ -47,6 +47,7 @@ public class PostTransactionService {
     })
     public Transaction createTransaction(@Valid CreateTransaction createTransaction) {
         Transaction transaction = mapper.map(createTransaction, Transaction.class);
+        transaction.setMethod(createTransaction.getMethod());
 
         if (createTransaction.getCardNumber() == null) {
             Account account = accountService.getAccountByAccountNumber(createTransaction.getAccountNumber());
@@ -64,8 +65,8 @@ public class PostTransactionService {
         }
 
         transaction.setStatus(TransactionStatus.PENDING); // Transactions will initially be pending when created
-        transaction.setInitialized(true);
-        return transaction;
+        transaction.setState(TransactionState.CREATED);
+        return repository.save(transaction);
     }
 
     /**
@@ -94,11 +95,16 @@ public class PostTransactionService {
      *                      please see {@link #createTransaction(CreateTransaction)}.
      * @return A receipt of the processed transaction.
      */
+    @Transactional(rollbackOn = {
+            UnprocessableException.class
+    })
     public Receipt processTransaction(Transaction transaction) {
 
         // Check that the transaction is initialized
-        if (!transaction.isInitialized()) throw new UnprocessableException("Transaction is not initialized. Unable to process transaction.");
+        if (transaction.getState() != TransactionState.CREATED) throw new UnprocessableException("Transaction is not initialized. Unable to process transaction.");
+        if (transaction.getState() == TransactionState.POSTED) throw new UnprocessableException("Transaction is already posted. Unable to process a transaction.");
 
+        transaction.setState(TransactionState.PROCESSING);
         // Perform the passed transaction
         performTransaction(transaction);
 
@@ -116,21 +122,19 @@ public class PostTransactionService {
     /**
      * Approve the transaction
      * @param transaction The transaction to approve
-     * @return A receipt of the approved transaction
      */
-    public Receipt approveTransaction(Transaction transaction) {
+    public void approveTransaction(Transaction transaction) {
         transaction.setStatus(TransactionStatus.APPROVED);
-        return processTransaction(transaction);
+        processTransaction(transaction);
     }
 
     /**
      * Deny the transaction
      * @param transaction The transaction to deny
-     * @return A receipt of the denied transaction
      */
-    public Receipt denyTransaction(Transaction transaction) {
+    public void denyTransaction(Transaction transaction) {
         transaction.setStatus(TransactionStatus.DENIED);
-        return processTransaction(transaction);
+        processTransaction(transaction);
     }
 
     /**
@@ -173,8 +177,26 @@ public class PostTransactionService {
 
         transaction.setPostedBalance(account.getBalance());
 
-        // Save transaction
-        repository.save(transaction);
+    }
+
+    // Validate transaction and set the correct status based on the account balance
+    public void validateTransaction(Transaction transaction) {
+        if (transaction.getState() != TransactionState.PROCESSING) throw new UnprocessableException("Transaction is in an invalid state.");
+
+        Account account = transaction.getAccount();
+        int balance = account.getBalance();
+
+        if (balance < 0)
+            denyTransaction(transaction);
+
+        if (account.getAccountType() == AccountType.CHECKING) {
+            int availableBalance = ((CheckingAccount) account).getAvailableBalance();
+            if (availableBalance < 0) denyTransaction(transaction);
+        }
+
+        // If the status is still pending after all checks
+        if (transaction.getStatus() == TransactionStatus.PENDING)
+            approveTransaction(transaction);
     }
 
 }

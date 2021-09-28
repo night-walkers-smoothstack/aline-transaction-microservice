@@ -13,9 +13,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
-public class PostTransactionServiceTest {
+public class TransactionApiUnitTest {
 
-    PostTransactionService service;
+    TransactionApi service;
     TransactionService transactionService;
     AccountService accountService;
     MerchantService merchantService;
@@ -29,8 +29,7 @@ public class PostTransactionServiceTest {
         merchantService = mock(MerchantService.class);
         repository = mock(TransactionRepository.class);
         mapper = mock(ModelMapper.class);
-        service = new PostTransactionService(
-                transactionService,
+        service = new TransactionApi(
                 accountService,
                 merchantService,
                 repository,

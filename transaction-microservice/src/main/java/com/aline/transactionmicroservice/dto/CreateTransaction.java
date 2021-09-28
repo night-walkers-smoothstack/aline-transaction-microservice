@@ -31,14 +31,14 @@ public class CreateTransaction {
      * Specifies whether it was a purchase, payment,
      * refund, etc...
      */
-    @NotNull
+    @NotNull(message = "Transaction type is required.")
     private TransactionType type;
 
     /**
      * The method the transaction used whether
      * it was through a credit card or ACH.
      */
-    @NotNull
+    @NotNull(message = "Transaction method is required.")
     private TransactionMethod method;
 
     /**
@@ -46,12 +46,6 @@ public class CreateTransaction {
      */
     @PositiveOrZero
     private int amount;
-
-    /**
-     * The initial status of the transaction.
-     */
-    @NotNull
-    private TransactionStatus status;
 
     /**
      * The merchant this transaction was
