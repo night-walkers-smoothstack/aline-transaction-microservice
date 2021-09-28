@@ -7,6 +7,7 @@ import com.aline.core.model.account.Account;
 import com.aline.core.model.account.AccountType;
 import com.aline.core.model.account.CheckingAccount;
 import com.aline.transactionmicroservice.dto.CreateTransaction;
+import com.aline.transactionmicroservice.dto.MerchantResponse;
 import com.aline.transactionmicroservice.dto.Receipt;
 import com.aline.transactionmicroservice.model.Merchant;
 import com.aline.transactionmicroservice.model.Transaction;
@@ -56,7 +57,9 @@ public class PostTransactionService {
         }
 
         if (isMerchantTransaction(createTransaction.getType())) {
-            Merchant merchant = merchantService.getMerchantByCode(createTransaction.getMerchantCode());
+            Merchant merchant = merchantService.checkMerchant(
+                    createTransaction.getMerchantCode(),
+                    createTransaction.getMerchantName());
             transaction.setMerchant(merchant);
         }
 
@@ -99,14 +102,35 @@ public class PostTransactionService {
         // Perform the passed transaction
         performTransaction(transaction);
 
-        val receiptBuilder = Receipt.builder()
-                .type(transaction.getType())
-                .method(transaction.getMethod())
-                .amount(transaction.getAmount())
-                .description(transaction.getDescription())
-                .status(transaction.getStatus());
+        val receipt = mapper.map(transaction, Receipt.class);
 
-        return null;
+        if (transaction.isMerchantTransaction()) {
+            receipt.setMerchantResponse(mapper.map(
+                    transaction.getMerchant(),
+                    MerchantResponse.class));
+        }
+
+        return receipt;
+    }
+
+    /**
+     * Approve the transaction
+     * @param transaction The transaction to approve
+     * @return A receipt of the approved transaction
+     */
+    public Receipt approveTransaction(Transaction transaction) {
+        transaction.setStatus(TransactionStatus.APPROVED);
+        return processTransaction(transaction);
+    }
+
+    /**
+     * Deny the transaction
+     * @param transaction The transaction to deny
+     * @return A receipt of the denied transaction
+     */
+    public Receipt denyTransaction(Transaction transaction) {
+        transaction.setStatus(TransactionStatus.DENIED);
+        return processTransaction(transaction);
     }
 
     /**

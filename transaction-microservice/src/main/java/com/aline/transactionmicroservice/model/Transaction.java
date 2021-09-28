@@ -142,9 +142,39 @@ public class Transaction {
     @Transient
     private boolean decreasing;
 
-    @PostLoad
-    public void setIncreaseDecrease() {
+    /**
+     * True if the transaction type is a merchant transaction type
+     */
+    @Transient
+    private boolean merchantTransaction;
 
+    @PostLoad
+    public void checkTransaction() {
+
+        // Check if transaction was requested by a merchant
+        checkTransactionType();
+
+        // Set the boolean values: increasing and decreasing
+        checkIncreaseDecrease();
+
+    }
+
+    private void checkTransactionType() {
+        switch (type) {
+            case PURCHASE:
+            case PAYMENT:
+            case REFUND:
+            case VOID:
+            case DEPOSIT:
+                merchantTransaction = true;
+                break;
+            default:
+                merchantTransaction = false;
+                break;
+        }
+    }
+
+    private void checkIncreaseDecrease() {
         // If amount is <= 0, then it will neither be increase nor decrease
         if (amount <= 0) {
             increasing = false;
@@ -174,7 +204,6 @@ public class Transaction {
                 decreasing = false;
                 break;
         }
-
     }
 
     @Override

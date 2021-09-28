@@ -51,7 +51,7 @@ public class PostTransactionServiceTest {
                 .status(TransactionStatus.APPROVED)
                 .build();
 
-        transaction.setIncreaseDecrease();
+        transaction.checkTransaction();
 
         service.performTransaction(transaction);
 
@@ -73,7 +73,7 @@ public class PostTransactionServiceTest {
                 .status(TransactionStatus.APPROVED)
                 .build();
 
-        transaction.setIncreaseDecrease();
+        transaction.checkTransaction();
 
         service.performTransaction(transaction);
 

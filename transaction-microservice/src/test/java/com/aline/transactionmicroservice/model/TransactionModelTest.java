@@ -129,7 +129,7 @@ class TransactionModelTest {
                 .amount(1)
                 .type(type)
                 .build();
-        transaction.setIncreaseDecrease();
+        transaction.checkTransaction();
         assertTrue(transaction.isDecreasing());
         assertFalse(transaction.isIncreasing());
     }
@@ -144,7 +144,7 @@ class TransactionModelTest {
                 .amount(1)
                 .type(type)
                 .build();
-        transaction.setIncreaseDecrease();
+        transaction.checkTransaction();
         assertFalse(transaction.isDecreasing());
         assertTrue(transaction.isIncreasing());
     }
@@ -159,7 +159,7 @@ class TransactionModelTest {
                 .amount(moreThanZero ? 1 : 0)
                 .type(type)
                 .build();
-        transaction.setIncreaseDecrease();
+        transaction.checkTransaction();
         assertFalse(transaction.isDecreasing());
         assertFalse(transaction.isIncreasing());
     }
