@@ -25,8 +25,8 @@ public class TransactionResponse {
     private TransactionMethod method;
     private int amount;
     private String accountNumber;
-    private String initialBalance;
-    private String postedBalance;
+    private int initialBalance;
+    private int postedBalance;
     private TransactionType type;
     private TransactionStatus status;
     private String description;
