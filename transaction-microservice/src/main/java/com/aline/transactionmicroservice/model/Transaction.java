@@ -136,14 +136,6 @@ public class Transaction {
     private LocalDateTime lastModified;
 
     /**
-     * Specifies if the transaction is a pre-authorization.
-     * If so the normal transaction process will be replaced with a manual
-     * pre-authorization and post-authorization process.
-     */
-    @Column
-    private boolean hold;
-
-    /**
      * True if the transaction increases the account balance
      */
     @Transient

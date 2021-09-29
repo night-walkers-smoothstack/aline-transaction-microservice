@@ -59,7 +59,7 @@ class TransactionApiTest {
                     .amount(10000)
                     .accountNumber("0011011234")
                     .type(TransactionType.PURCHASE)
-                    .merchantCode("NEWM")
+                    .merchantCode("NEWME")
                     .merchantName("New Merchant")
                     .method(TransactionMethod.ACH)
                     .build();
@@ -73,7 +73,7 @@ class TransactionApiTest {
 
             // Merchant and account information are correct
             assertEquals("0011011234", account.getAccountNumber());
-            assertEquals("NEWM", merchant.getCode());
+            assertEquals("NEWME", merchant.getCode());
             assertEquals("New Merchant", merchant.getName());
 
             assertEquals(TransactionType.PURCHASE, transaction.getType());
@@ -117,7 +117,7 @@ class TransactionApiTest {
                     .amount(10000)
                     .accountNumber("0011011234")
                     .type(TransactionType.PURCHASE)
-                    .merchantCode("ALNE")
+                    .merchantCode("ALINE")
                     .merchantName("Aline Financial Online Store")
                     .method(TransactionMethod.ACH)
                     .build();
@@ -131,7 +131,7 @@ class TransactionApiTest {
 
             // Merchant and account information are correct
             assertEquals("0011011234", account.getAccountNumber());
-            assertEquals("ALNE", merchant.getCode());
+            assertEquals("ALINE", merchant.getCode());
             assertNotEquals(createTransaction.getMerchantName(), merchant.getName()); // If Merchant exists use existing name
             assertEquals("Aline Financial Bank", merchant.getName());
 
@@ -148,7 +148,7 @@ class TransactionApiTest {
                     .amount(10000)
                     .accountNumber("0011011234")
                     .type(TransactionType.PURCHASE)
-                    .merchantCode("ALNE")
+                    .merchantCode("ALINE")
                     .merchantName("Aline Financial Online Store")
                     .method(TransactionMethod.ACH)
                     .build();
@@ -162,7 +162,7 @@ class TransactionApiTest {
 
             // Merchant and account information are correct
             assertEquals("0011011234", account.getAccountNumber());
-            assertEquals("ALNE", merchant.getCode());
+            assertEquals("ALINE", merchant.getCode());
             assertNotEquals(createTransaction.getMerchantName(), merchant.getName()); // If Merchant exists use existing name
             assertEquals("Aline Financial Bank", merchant.getName());
 
@@ -194,7 +194,7 @@ class TransactionApiTest {
                     .amount(10000)
                     .accountNumber("0011011234")
                     .type(TransactionType.PURCHASE)
-                    .merchantCode("ALNE")
+                    .merchantCode("ALINE")
                     .merchantName("Aline Financial Online Store")
                     .method(TransactionMethod.ACH)
                     .build();
@@ -220,7 +220,7 @@ class TransactionApiTest {
             CreateTransaction createTransaction = CreateTransaction.builder()
                     .amount(100000)
                     .accountNumber("0011011234")
-                    .merchantCode("ALNE")
+                    .merchantCode("ALINE")
                     .type(TransactionType.DEPOSIT)
                     .method(TransactionMethod.ACH)
                     .build();
@@ -252,7 +252,7 @@ class TransactionApiTest {
 
             CreateTransaction createTransaction = CreateTransaction.builder()
                     .amount(5000) // $50.00
-                    .merchantCode("ALNE")
+                    .merchantCode("ALINE")
                     .accountNumber("0011011234")
                     .type(TransactionType.PURCHASE)
                     .method(TransactionMethod.ACH)
@@ -267,7 +267,6 @@ class TransactionApiTest {
             int initialBalance = preTransactionAccount.getBalance();
 
             Transaction transaction = transactions.createTransaction(createTransaction);
-            assertFalse(transaction.isHold());
 
             Receipt receipt = transactions.processTransaction(transaction);
             log.info("Receipt: {}", receipt);
@@ -293,7 +292,7 @@ class TransactionApiTest {
                     .amount(500000)
                     .method(TransactionMethod.ACH)
                     .type(TransactionType.DEPOSIT)
-                    .merchantCode("ALNE")
+                    .merchantCode("ALINE")
                     .accountNumber("0011011234")
                     .build();
 
@@ -327,7 +326,7 @@ class TransactionApiTest {
 
             CreateTransaction createTransaction = CreateTransaction.builder()
                     .amount(5000000)
-                    .merchantCode("ALNE")
+                    .merchantCode("ALINE")
                     .accountNumber("0011011234")
                     .type(TransactionType.PURCHASE)
                     .method(TransactionMethod.ACH)
@@ -342,7 +341,6 @@ class TransactionApiTest {
             int initialBalance = preTransactionAccount.getBalance();
 
             Transaction transaction = transactions.createTransaction(createTransaction);
-            assertFalse(transaction.isHold());
             assertEquals(TransactionStatus.PENDING, transaction.getStatus());
 
             Receipt receipt = transactions.processTransaction(transaction);

@@ -52,25 +52,25 @@ values (1, 1),
        (3, 3);
 
 insert into merchant (code, address, city, description, name, state, zipcode, registered_at)
-values ('ALNE', '123 Address St', 'Townsville', 'Aline Financial Bank', 'Aline Financial Bank', 'Maine', '12345', '2021-08-05');
+values ('ALINE', '123 Address St', 'Townsville', 'Aline Financial Bank', 'Aline Financial Bank', 'Maine', '12345', '2021-08-05');
 
 insert into transaction (id, type, method, amount, date, account_id, initial_balance, posted_balance, status, merchant_code, state)
-values (1, 'WITHDRAWAL', 'ACH', 10000, '2021-08-01', 1, 100000, 90000, 'APPROVED', 'ALNE', 'POSTED');
+values (1, 'WITHDRAWAL', 'ACH', 10000, '2021-08-01', 1, 100000, 90000, 'APPROVED', 'ALINE', 'POSTED');
 
 insert into transaction (id, type, method, amount, date, account_id, initial_balance, posted_balance, status, merchant_code, state)
-values (2, 'PURCHASE', 'DEBIT_CARD', 10000, '2021-08-01', 1, 90000, 80000, 'APPROVED', 'ALNE', 'POSTED');
+values (2, 'PURCHASE', 'DEBIT_CARD', 10000, '2021-08-01', 1, 90000, 80000, 'APPROVED', 'ALINE', 'POSTED');
 
 insert into transaction (id, type, method, amount, date, account_id, initial_balance, posted_balance, status, merchant_code, state)
-values (3, 'PURCHASE', 'DEBIT_CARD', 10000, '2021-08-01', 3, 50000, 80000, 'APPROVED', 'ALNE', 'POSTED');
+values (3, 'PURCHASE', 'DEBIT_CARD', 10000, '2021-08-01', 3, 50000, 80000, 'APPROVED', 'ALINE', 'POSTED');
 
 insert into transaction (id, type, method, amount, date, account_id, initial_balance, posted_balance, status, merchant_code, state)
-values (4, 'DEPOSIT', 'ACH', 500000, '2021-08-01', 3, 1300000, 80000, 'APPROVED', 'ALNE', 'POSTED');
+values (4, 'DEPOSIT', 'ACH', 500000, '2021-08-01', 3, 1300000, 80000, 'APPROVED', 'ALINE', 'POSTED');
 
 insert into transaction (id, type, method, amount, date, account_id, initial_balance, posted_balance, status, merchant_code, state)
-values (5, 'DEPOSIT', 'ACH', 500000, '2021-08-01', 1, 1300000, 80000, 'APPROVED', 'ALNE', 1);
+values (5, 'DEPOSIT', 'ACH', 500000, '2021-08-01', 1, 1300000, 80000, 'APPROVED', 'ALINE', 'POSTED');
 
 insert into transaction (id, type, method, amount, date, account_id, initial_balance, posted_balance, status, merchant_code, state)
-values (6, 'WITHDRAWAL', 'ACH', 500000, '2021-08-01', 3, 1800000, 1300000, 'APPROVED', 'ALNE', 'POSTED');
+values (6, 'WITHDRAWAL', 'ACH', 500000, '2021-08-01', 3, 1800000, 1300000, 'APPROVED', 'ALINE', 'POSTED');
 
 insert into transaction (id, type, method, amount, date, account_id, initial_balance, posted_balance, status, merchant_code, state)
-values (7, 'TRANSFER_OUT', 'APP', 500000, '2021-08-01', 2, 1300000, 80000, 'APPROVED', 'ALNE', 'POSTED');
+values (7, 'TRANSFER_OUT', 'APP', 500000, '2021-08-01', 2, 1300000, 80000, 'APPROVED', 'ALINE', 'POSTED');

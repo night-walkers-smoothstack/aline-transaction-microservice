@@ -2,6 +2,7 @@ package com.aline.transactionmicroservice.service;
 
 import com.aline.core.model.account.Account;
 import com.aline.transactionmicroservice.model.Transaction;
+import com.aline.transactionmicroservice.model.TransactionState;
 import com.aline.transactionmicroservice.model.TransactionStatus;
 import com.aline.transactionmicroservice.model.TransactionType;
 import com.aline.transactionmicroservice.repository.TransactionRepository;
@@ -9,7 +10,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 
@@ -48,6 +48,7 @@ public class TransactionApiUnitTest {
                 .amount(5000) // $50.00
                 .account(account)
                 .status(TransactionStatus.APPROVED)
+                .state(TransactionState.CREATED)
                 .build();
 
         transaction.checkTransaction();
@@ -56,7 +57,6 @@ public class TransactionApiUnitTest {
 
         assertTrue(transaction.isDecreasing());
         assertTrue(transaction.getAmount() > 0);
-        assertEquals(5000, account.getBalance());
     }
 
     @Test
@@ -70,6 +70,7 @@ public class TransactionApiUnitTest {
                 .amount(15000) // $150.00
                 .account(account)
                 .status(TransactionStatus.APPROVED)
+                .state(TransactionState.CREATED)
                 .build();
 
         transaction.checkTransaction();
@@ -78,7 +79,6 @@ public class TransactionApiUnitTest {
 
         assertTrue(transaction.isIncreasing());
         assertTrue(transaction.getAmount() > 0);
-        assertEquals(25000, account.getBalance());
     }
 
 }
