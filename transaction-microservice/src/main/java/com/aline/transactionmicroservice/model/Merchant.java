@@ -33,7 +33,7 @@ public class Merchant {
      * The merchant code used to identify a merchant
      */
     @Id
-    @Length(min = 4, max = 8)
+    @Length(min = 5, max = 8)
     private String code;
 
     /**
