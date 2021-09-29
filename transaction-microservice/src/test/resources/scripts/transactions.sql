@@ -51,8 +51,8 @@ values (1, 1),
        (2, 3),
        (3, 3);
 
-insert into merchant (code, address, city, description, name, state, zipcode)
-values ('ALNE', '123 Address St', 'Townsville', 'Aline Financial Bank', 'Aline Financial Bank', 'Maine', '12345');
+insert into merchant (code, address, city, description, name, state, zipcode, registered_at)
+values ('ALNE', '123 Address St', 'Townsville', 'Aline Financial Bank', 'Aline Financial Bank', 'Maine', '12345', '2021-08-05');
 
 insert into transaction (id, type, method, amount, date, account_id, initial_balance, posted_balance, status, merchant_code, state)
 values (1, 'WITHDRAWAL', 'ACH', 10000, '2021-08-01', 1, 100000, 90000, 'APPROVED', 'ALNE', 'POSTED');

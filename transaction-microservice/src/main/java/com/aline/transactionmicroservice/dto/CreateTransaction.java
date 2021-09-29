@@ -84,4 +84,8 @@ public class CreateTransaction {
     @AccountNumber
     private String accountNumber;
 
+    /**
+     * Specifies if transaction is a pre-authorization transaction
+     */
+    private boolean hold;
 }

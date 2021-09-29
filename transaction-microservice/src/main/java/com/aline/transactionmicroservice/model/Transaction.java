@@ -10,6 +10,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.validator.constraints.Length;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -133,6 +134,14 @@ public class Transaction {
      */
     @UpdateTimestamp
     private LocalDateTime lastModified;
+
+    /**
+     * Specifies if the transaction is a pre-authorization.
+     * If so the normal transaction process will be replaced with a manual
+     * pre-authorization and post-authorization process.
+     */
+    @Column
+    private boolean hold;
 
     /**
      * True if the transaction increases the account balance

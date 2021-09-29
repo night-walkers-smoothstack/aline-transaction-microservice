@@ -18,6 +18,7 @@ import com.aline.transactionmicroservice.model.TransactionStatus;
 import com.aline.transactionmicroservice.model.TransactionType;
 import com.aline.transactionmicroservice.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -38,6 +39,7 @@ import javax.validation.Valid;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j(topic = "Transactions")
 public class TransactionApi {
     private final AccountService accountService;
     private final MerchantService merchantService;
@@ -102,13 +104,15 @@ public class TransactionApi {
     })
     public Receipt processTransaction(Transaction transaction) {
 
-        // Check that the transaction is initialized
-        if (transaction.getState() != TransactionState.CREATED) throw new UnprocessableException("Transaction is not initialized. Unable to process transaction.");
-        if (transaction.getState() == TransactionState.POSTED) throw new UnprocessableException("Transaction is already posted. Unable to process a transaction.");
+        if (transaction.getState() == TransactionState.POSTED)
+            throw new UnprocessableException("Transaction is already posted. Unable to process a transaction.");
 
         transaction.setState(TransactionState.PROCESSING);
+
         // Perform the passed transaction
         performTransaction(transaction);
+        validateTransaction(transaction);
+        postTransaction(transaction);
 
         val receipt = mapper.map(transaction, Receipt.class);
 
@@ -127,7 +131,7 @@ public class TransactionApi {
      */
     public void approveTransaction(Transaction transaction) {
         transaction.setStatus(TransactionStatus.APPROVED);
-        processTransaction(transaction);
+        performTransaction(transaction);
     }
 
     /**
@@ -136,7 +140,7 @@ public class TransactionApi {
      */
     public void denyTransaction(Transaction transaction) {
         transaction.setStatus(TransactionStatus.DENIED);
-        processTransaction(transaction);
+        performTransaction(transaction);
     }
 
     /**
@@ -155,50 +159,78 @@ public class TransactionApi {
 
         Account account = transaction.getAccount();
 
+        int postedBalance = account.getBalance();
+
         // If transaction is approved, decrease actual balance
         if (transaction.getStatus() == TransactionStatus.APPROVED) {
             if (isIncreasing && !isDecreasing) {
-                account.increaseBalance(amount);
+                postedBalance = account.getBalance() + amount;
             } else if (isDecreasing && !isIncreasing) {
-                account.decreaseBalance(amount);
+                postedBalance = account.getBalance() - amount;
             }
-
         } else if (transaction.getStatus() == TransactionStatus.PENDING) {
-
             // If transaction is pending and account is checking, decrease available balance
             if (account.getAccountType() == AccountType.CHECKING) {
                 val checkingAccount = (CheckingAccount) account;
                 if (isIncreasing && !isDecreasing) {
-                    checkingAccount.increaseAvailableBalance(amount);
+                    postedBalance = checkingAccount.getAvailableBalance() + amount;
                 } else if (isDecreasing && !isIncreasing) {
-                    checkingAccount.decreaseAvailableBalance(amount);
+                    postedBalance = checkingAccount.getAvailableBalance() - amount;
                 }
-                transaction.setPostedBalance(checkingAccount.getAvailableBalance());
+                transaction.setPostedBalance(postedBalance);
+                return;
             }
         }
-
-        transaction.setPostedBalance(account.getBalance());
-
+        transaction.setPostedBalance(postedBalance);
     }
 
-    // Validate transaction and set the correct status based on the account balance
+    /**
+     * Validate transaction based on account balance
+     * @param transaction The transaction to validate
+     */
     public void validateTransaction(Transaction transaction) {
-        if (transaction.getState() != TransactionState.PROCESSING) throw new UnprocessableException("Transaction is in an invalid state.");
+        if (transaction.getState() != TransactionState.PROCESSING)
+            throw new UnprocessableException("Transaction is in an invalid state.");
+        if (transaction.getStatus() != TransactionStatus.PENDING)
+            throw new UnprocessableException("Transaction already validated.");
 
-        Account account = transaction.getAccount();
-        int balance = account.getBalance();
+        int balance = transaction.getPostedBalance();
 
-        if (balance < 0)
+        if (balance < 0) {
             denyTransaction(transaction);
-
-        if (account.getAccountType() == AccountType.CHECKING) {
-            int availableBalance = ((CheckingAccount) account).getAvailableBalance();
-            if (availableBalance < 0) denyTransaction(transaction);
         }
 
         // If the status is still pending after all checks
         if (transaction.getStatus() == TransactionStatus.PENDING)
             approveTransaction(transaction);
+    }
+
+    /**
+     * Set the state of the transaction to POSTED and commit all changes to the database
+     * @param transaction The transaction to post
+     */
+    public void postTransaction(Transaction transaction) {
+        if (transaction.getState() == TransactionState.POSTED)
+            throw new UnprocessableException("Transaction is already posted.");
+        if (transaction.getState() != TransactionState.PROCESSING)
+            throw new UnprocessableException("Transaction needs to be processed before it is posted.");
+        if (transaction.getStatus() == TransactionStatus.PENDING)
+            throw new UnprocessableException("Cannot post a transaction that is pending.");
+        transaction.setState(TransactionState.POSTED);
+        if (transaction.getStatus() == TransactionStatus.APPROVED) {
+            Account account = transaction.getAccount();
+            if (transaction.isIncreasing() && !transaction.isDecreasing()) {
+                account.increaseBalance(transaction.getAmount());
+                if (account.getAccountType() == AccountType.CHECKING)
+                    ((CheckingAccount) account).increaseAvailableBalance(transaction.getAmount());
+            } else if (transaction.isDecreasing() && !transaction.isIncreasing()) {
+                account.decreaseBalance(transaction.getAmount());
+                if (account.getAccountType() == AccountType.CHECKING)
+                    ((CheckingAccount) account).decreaseAvailableBalance(transaction.getAmount());
+            }
+            log.info("Transaction approved.");
+        }
+        repository.save(transaction);
     }
 
 
