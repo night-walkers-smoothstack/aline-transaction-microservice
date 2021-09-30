@@ -6,13 +6,13 @@ pipeline {
     environment {
         COMMIT_HASH = "${sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()}"
         AWS_ID = credentials('AWS_ID')
-        SERVICE_NAME = 'ENTER-SERVICE-NAME'
-        SERVICE_PORT = 0000
+        SERVICE_NAME = 'transaction'
+        SERVICE_PORT = 8073
         REGION = 'us-east-2'
         APP_NAME = 'alinefinancial'
         APP_ENV = 'dev'
         ORGANIZATION = 'Aline-Financial'
-        PROJECT_NAME = 'ENTER-GIT-REPO-HERE'
+        PROJECT_NAME = 'aline-transaction-microservice'
     }
 
     stages {
