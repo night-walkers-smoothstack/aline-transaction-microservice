@@ -6,8 +6,12 @@ import com.aline.transactionmicroservice.dto.TransactionResponse;
 import com.aline.transactionmicroservice.exception.TransactionNotFoundException;
 import com.aline.transactionmicroservice.model.Transaction;
 import com.aline.transactionmicroservice.repository.TransactionRepository;
+import com.aline.transactionmicroservice.util.TransactionCriteria;
+import com.aline.transactionmicroservice.util.TransactionCriteriaMode;
+import com.aline.transactionmicroservice.util.TransactionSpecification;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.val;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -96,7 +100,13 @@ public class TransactionService {
      * @return A page of transacitons
      */
     public Page<Transaction> getAllTransactionsByAccount(@NonNull Account account, @NonNull Pageable pageable) {
-        return repository.findAllByAccount(account, pageable);
+        val criteria = TransactionCriteria.builder()
+                .searchTerm("")
+                .mode(TransactionCriteriaMode.ACCOUNT)
+                .accountId(account.getId())
+                .build();
+        val spec = new TransactionSpecification(criteria);
+        return repository.findAll(spec, pageable);
     }
 
     public Page<Transaction> getAllTransactionsByMember(@NonNull Member member, @NonNull Pageable pageable) {

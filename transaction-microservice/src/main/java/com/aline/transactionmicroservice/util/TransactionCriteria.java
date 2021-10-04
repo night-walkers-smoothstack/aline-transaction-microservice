@@ -12,4 +12,6 @@ import lombok.NoArgsConstructor;
 public class TransactionCriteria {
     private String searchTerm;
     private TransactionCriteriaMode mode;
+    private long accountId;
+    private long memberId;
 }
