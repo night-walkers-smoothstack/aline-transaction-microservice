@@ -269,7 +269,7 @@ public class TransactionApi {
         String outDescription = String.format("%s%s", String.format("TRANSFER to account %s", maskedToAccountNo),
                 (Strings.isNotBlank(request.getMemo()) && request.getMemo() != null) ? " - " + request.getMemo() : "");
 
-        String inDescription = String.format("%s%s", String.format("TRANSFER from account %s", maskedToAccountNo),
+        String inDescription = String.format("%s%s", String.format("TRANSFER from account %s", maskedFromAccountNo),
                 (Strings.isNotBlank(request.getMemo()) && request.getMemo() != null) ? " - " + request.getMemo() : "");
 
 
