@@ -23,6 +23,7 @@ import com.aline.transactionmicroservice.repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.apache.logging.log4j.util.Strings;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -265,11 +266,18 @@ public class TransactionApi {
         String maskedToAccountNo = accountService
                 .maskAccountNumber(request.getToAccountNumber());
 
+        String outDescription = String.format("%s%s", String.format("TRANSFER to account %s", maskedToAccountNo),
+                (Strings.isNotBlank(request.getMemo()) && request.getMemo() != null) ? " - " + request.getMemo() : "");
+
+        String inDescription = String.format("%s%s", String.format("TRANSFER from account %s", maskedToAccountNo),
+                (Strings.isNotBlank(request.getMemo()) && request.getMemo() != null) ? " - " + request.getMemo() : "");
+
+
         CreateTransaction transferOut = CreateTransaction.builder()
                 .accountNumber(request.getFromAccountNumber())
                 .type(TransactionType.TRANSFER_OUT)
                 .amount(request.getAmount())
-                .description(String.format("TRANSFER to account %s", maskedToAccountNo))
+                .description(outDescription)
                 .method(TransactionMethod.APP)
                 .build();
 
@@ -277,7 +285,7 @@ public class TransactionApi {
                 .accountNumber(request.getToAccountNumber())
                 .type(TransactionType.TRANSFER_IN)
                 .amount(request.getAmount())
-                .description(String.format("TRANSFER from account %s", maskedFromAccountNo))
+                .description(inDescription)
                 .method(TransactionMethod.APP)
                 .build();
 
