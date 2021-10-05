@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -22,8 +23,11 @@ public class MemberController {
 
     @GetMapping(value = "/{id}/transactions", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    public Page<TransactionResponse> getAllTransactionsByMemberId(@PathVariable long id, Pageable pageable) {
-        Page<Transaction> transactions = service.getAllTransactionsByMemberId(id, pageable);
+    public Page<TransactionResponse> getAllTransactionsByMemberId(@PathVariable long id,
+                                                                  Pageable pageable,
+                                                                  @RequestParam(required = false)
+                                                                  String[] search) {
+        Page<Transaction> transactions = service.getAllTransactionsByMemberId(id, pageable, search);
         return transactions.map(service::mapToResponse);
     }
 }

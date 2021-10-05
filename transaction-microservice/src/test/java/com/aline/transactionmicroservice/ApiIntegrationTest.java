@@ -3,6 +3,8 @@ package com.aline.transactionmicroservice;
 import com.aline.core.annotation.test.SpringBootIntegrationTest;
 import com.aline.core.annotation.test.SpringTestProperties;
 import com.aline.transactionmicroservice.exception.TransactionNotFoundException;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -13,6 +15,7 @@ import javax.transaction.Transactional;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -86,6 +89,34 @@ class ApiIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.content.length()").value(3));
+    }
+
+    @Nested
+    @DisplayName("Search Transactions")
+    class SearchTransactionsTest {
+
+        @Test
+        void test_searchTransactionsByAccountId_status_is_ok_correctAmount() throws Exception {
+
+            mockMvc.perform(get("/accounts/{id}/transactions", 1)
+                    .queryParam("search", "batman", "clark kent"))
+                    .andExpect(status().isOk())
+                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(jsonPath("$.content.length()").value(2))
+                    .andDo(print());
+
+        }
+
+        @Test
+        void test_searchTransactionsByMemberId_status_is_ok_correctAmount() throws Exception {
+            mockMvc.perform(get("/members/{id}/transactions", 1)
+                            .queryParam("search", "batman"))
+                    .andExpect(status().isOk())
+                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(jsonPath("$.content.length()").value(2))
+                    .andDo(print());
+        }
+
     }
 
 }
