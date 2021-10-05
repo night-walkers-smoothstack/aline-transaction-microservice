@@ -1,6 +1,7 @@
 package com.aline.transactionmicroservice.service;
 
 import com.aline.core.annotation.test.SpringBootUnitTest;
+import com.aline.core.annotation.test.SpringTestProperties;
 import com.aline.core.exception.UnprocessableException;
 import com.aline.core.model.account.Account;
 import com.aline.core.model.account.AccountType;
@@ -8,6 +9,7 @@ import com.aline.core.model.account.CheckingAccount;
 import com.aline.core.repository.AccountRepository;
 import com.aline.transactionmicroservice.dto.CreateTransaction;
 import com.aline.transactionmicroservice.dto.Receipt;
+import com.aline.transactionmicroservice.dto.TransferFundsRequest;
 import com.aline.transactionmicroservice.model.Merchant;
 import com.aline.transactionmicroservice.model.Transaction;
 import com.aline.transactionmicroservice.model.TransactionMethod;
@@ -33,7 +35,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SpringBootUnitTest
+@SpringBootUnitTest(SpringTestProperties.DISABLE_WEB_SECURITY)
 @Sql(scripts = {"classpath:scripts/transactions.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @Transactional
 @Slf4j(topic = "Transaction API Test")
@@ -359,6 +361,37 @@ class TransactionApiTest {
             assertEquals(initialBalance, transaction.getInitialBalance());
             assertEquals(createTransaction.getAmount(), transaction.getAmount());
             assertEquals(initialBalance, transaction.getPostedBalance());
+
+        }
+
+    }
+
+    @Nested
+    @DisplayName("Transfer Funds Test")
+    class TransferFundsTests {
+
+        @Test
+        void test_transferFunds_accountsReflectNewBalance() {
+            TransferFundsRequest request = TransferFundsRequest.builder()
+                    .fromAccountNumber("0011011234")
+                    .toAccountNumber("0012021234")
+                    .amount(10000)
+                    .build();
+
+            Receipt[] receipts = transactions.transferFunds(request);
+            assertEquals(2, receipts.length);
+
+            Account fromAccount = accountRepository.findByAccountNumber(request.getFromAccountNumber())
+                    .orElse(null);
+
+            Account toAccount = accountRepository.findByAccountNumber(request.getToAccountNumber())
+                    .orElse(null);
+
+            assertNotNull(fromAccount);
+            assertNotNull(toAccount);
+
+            assertEquals(90000, fromAccount.getBalance());
+            assertEquals(10010000, toAccount.getBalance());
 
         }
 

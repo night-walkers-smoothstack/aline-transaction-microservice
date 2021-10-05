@@ -47,6 +47,9 @@ public class TransactionController {
         return transactions.processTransaction(transaction);
     }
 
+    @Operation(description = "Create a transfer funds transaction")
+    @PostMapping("/transfer")
+    @ResponseStatus(HttpStatus.OK)
     public Receipt[] transferFunds(@Valid @RequestBody TransferFundsRequest transferFundsRequest) {
         return transactions.transferFunds(transferFundsRequest);
     }

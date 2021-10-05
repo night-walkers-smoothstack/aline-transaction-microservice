@@ -24,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -255,6 +256,7 @@ public class TransactionApi {
      * @param request The transfer funds request
      * @return An array of 2 receipts
      */
+    @PreAuthorize("@authService.canTransfer(#request)")
     public Receipt[] transferFunds(TransferFundsRequest request) {
 
         String maskedFromAccountNo = accountService
