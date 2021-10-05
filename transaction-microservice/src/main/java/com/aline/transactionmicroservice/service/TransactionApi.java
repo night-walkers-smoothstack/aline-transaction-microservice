@@ -6,13 +6,16 @@ import com.aline.core.exception.notfound.AccountNotFoundException;
 import com.aline.core.model.account.Account;
 import com.aline.core.model.account.AccountType;
 import com.aline.core.model.account.CheckingAccount;
+import com.aline.core.security.annotation.RoleIsManagement;
 import com.aline.transactionmicroservice.dto.CreateTransaction;
 import com.aline.transactionmicroservice.dto.MerchantResponse;
 import com.aline.transactionmicroservice.dto.Receipt;
+import com.aline.transactionmicroservice.dto.TransferFundsRequest;
 import com.aline.transactionmicroservice.exception.TransactionNotFoundException;
 import com.aline.transactionmicroservice.exception.TransactionPostedException;
 import com.aline.transactionmicroservice.model.Merchant;
 import com.aline.transactionmicroservice.model.Transaction;
+import com.aline.transactionmicroservice.model.TransactionMethod;
 import com.aline.transactionmicroservice.model.TransactionState;
 import com.aline.transactionmicroservice.model.TransactionStatus;
 import com.aline.transactionmicroservice.model.TransactionType;
@@ -238,11 +241,55 @@ public class TransactionApi {
      * Delete transaction by its ID
      * @param id The ID of the transaction to delete
      */
+    @RoleIsManagement
     public void deleteTransactionById(long id) {
         Transaction transaction = repository.findById(id).orElseThrow(TransactionNotFoundException::new);
         if (transaction.getState() != TransactionState.POSTED) {
             repository.delete(transaction);
         } else throw new TransactionPostedException();
+    }
+
+    /**
+     * Transfer funds from one account to another using a transfer funds
+     * request.
+     * @param request The transfer funds request
+     * @return An array of 2 receipts
+     */
+    public Receipt[] transferFunds(TransferFundsRequest request) {
+
+        String maskedFromAccountNo = accountService
+                .maskAccountNumber(request.getFromAccountNumber());
+
+        String maskedToAccountNo = accountService
+                .maskAccountNumber(request.getToAccountNumber());
+
+        CreateTransaction transferOut = CreateTransaction.builder()
+                .accountNumber(request.getFromAccountNumber())
+                .type(TransactionType.TRANSFER_OUT)
+                .amount(request.getAmount())
+                .description(String.format("TRANSFER to account %s", maskedToAccountNo))
+                .method(TransactionMethod.APP)
+                .build();
+
+        CreateTransaction transferIn = CreateTransaction.builder()
+                .accountNumber(request.getToAccountNumber())
+                .type(TransactionType.TRANSFER_IN)
+                .amount(request.getAmount())
+                .description(String.format("TRANSFER from account %s", maskedFromAccountNo))
+                .method(TransactionMethod.APP)
+                .build();
+
+        Transaction outTransaction = createTransaction(transferOut);
+        Transaction inTransaction = createTransaction(transferIn);
+
+        Receipt outReceipt = processTransaction(outTransaction);
+        Receipt inReceipt = processTransaction(inTransaction);
+
+        return new Receipt[]{
+                outReceipt,
+                inReceipt
+        };
+
     }
 
 }
