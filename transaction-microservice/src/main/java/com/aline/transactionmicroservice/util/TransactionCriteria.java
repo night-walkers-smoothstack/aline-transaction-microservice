@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TransactionCriteria {
-    private String searchTerm;
+    private String[] searchTerms;
     private TransactionCriteriaMode mode;
     private long accountId;
     private long memberId;

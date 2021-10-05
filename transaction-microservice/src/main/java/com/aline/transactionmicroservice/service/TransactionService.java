@@ -15,6 +15,7 @@ import lombok.val;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.lang.Nullable;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -64,9 +65,11 @@ public class TransactionService {
      * @see AccountService#getAccountByAccountNumber(String)
      */
     @PreAuthorize("@authService.canAccessByAccountNumber(#accountNumber)")
-    public Page<Transaction> getAllTransactionsByAccountNumber(@NonNull String accountNumber, @NonNull Pageable pageable) {
+    public Page<Transaction> getAllTransactionsByAccountNumber(@NonNull String accountNumber,
+                                                               @NonNull Pageable pageable,
+                                                               @Nullable String[] searchTerms) {
         Account account = accountService.getAccountByAccountNumber(accountNumber);
-        return getAllTransactionsByAccount(account, pageable);
+        return getAllTransactionsByAccount(account, pageable, searchTerms);
     }
 
     /**
@@ -76,9 +79,11 @@ public class TransactionService {
      * @return A page of transactions based on the account ID
      */
     @PreAuthorize("@authService.canAccessByAccountId(#id)")
-    public Page<Transaction> getAllTransactionsByAccountId(long id, @NonNull Pageable pageable) {
+    public Page<Transaction> getAllTransactionsByAccountId(long id,
+                                                           @NonNull Pageable pageable,
+                                                           @Nullable String[] searchTerms) {
         Account account = accountService.getAccountById(id);
-        return getAllTransactionsByAccount(account, pageable);
+        return getAllTransactionsByAccount(account, pageable, searchTerms);
     }
 
     /**
@@ -88,9 +93,11 @@ public class TransactionService {
      * @return A page of transactions based on the supplied member ID
      */
     @PreAuthorize("@authService.canAccessByMemberId(#memberId)")
-    public Page<Transaction> getAllTransactionsByMemberId(long memberId, @NonNull Pageable pageable) {
+    public Page<Transaction> getAllTransactionsByMemberId(long memberId,
+                                                          @NonNull Pageable pageable,
+                                                          @Nullable String[] searchTerms) {
         Member member = memberService.getMemberById(memberId);
-        return getAllTransactionsByMember(member, pageable);
+        return getAllTransactionsByMember(member, pageable, searchTerms);
     }
 
     /**
@@ -99,9 +106,11 @@ public class TransactionService {
      * @param pageable The pageable object passed in by the calling controller
      * @return A page of transacitons
      */
-    public Page<Transaction> getAllTransactionsByAccount(@NonNull Account account, @NonNull Pageable pageable) {
+    public Page<Transaction> getAllTransactionsByAccount(@NonNull Account account,
+                                                         @NonNull Pageable pageable,
+                                                         @Nullable String[] searchTerms) {
         val criteria = TransactionCriteria.builder()
-                .searchTerm("")
+                .searchTerms(searchTerms)
                 .mode(TransactionCriteriaMode.ACCOUNT)
                 .accountId(account.getId())
                 .build();
@@ -109,8 +118,16 @@ public class TransactionService {
         return repository.findAll(spec, pageable);
     }
 
-    public Page<Transaction> getAllTransactionsByMember(@NonNull Member member, @NonNull Pageable pageable) {
-        return repository.findAllByMember(member, pageable);
+    public Page<Transaction> getAllTransactionsByMember(@NonNull Member member,
+                                                        @NonNull Pageable pageable,
+                                                        @Nullable String[] searchTerms) {
+        val criteria = TransactionCriteria.builder()
+                .searchTerms(searchTerms)
+                .mode(TransactionCriteriaMode.MEMBER)
+                .accountId(member.getId())
+                .build();
+        val spec = new TransactionSpecification(criteria);
+        return repository.findAll(spec, pageable);
     }
 
     /**

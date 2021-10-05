@@ -91,22 +91,32 @@ class ApiIntegrationTest {
                 .andExpect(jsonPath("$.content.length()").value(3));
     }
 
-//    @Nested
-//    @DisplayName("Search Transactions")
-//    class SearchTransactionsTest {
-//
-//        @Test
-//        void test_searchTransactionsByAccountId_status_is_ok_correctAmount() throws Exception {
-//
-//            mockMvc.perform(get("/accounts/{id}/transactions", 1)
-//                    .queryParam("search", "batman"))
-//                    .andExpect(status().isOk())
-//                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-//                    .andExpect(jsonPath("$.content.length()").value(1))
-//                    .andDo(print());
-//
-//        }
-//
-//    }
+    @Nested
+    @DisplayName("Search Transactions")
+    class SearchTransactionsTest {
+
+        @Test
+        void test_searchTransactionsByAccountId_status_is_ok_correctAmount() throws Exception {
+
+            mockMvc.perform(get("/accounts/{id}/transactions", 1)
+                    .queryParam("search", "batman", "clark kent"))
+                    .andExpect(status().isOk())
+                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(jsonPath("$.content.length()").value(2))
+                    .andDo(print());
+
+        }
+
+        @Test
+        void test_searchTransactionsByMemberId_status_is_ok_correctAmount() throws Exception {
+            mockMvc.perform(get("/members/{id}/transactions", 1)
+                            .queryParam("search", "batman"))
+                    .andExpect(status().isOk())
+                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(jsonPath("$.content.length()").value(2))
+                    .andDo(print());
+        }
+
+    }
 
 }
