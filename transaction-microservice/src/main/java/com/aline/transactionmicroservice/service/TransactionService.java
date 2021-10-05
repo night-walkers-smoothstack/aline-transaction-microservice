@@ -124,7 +124,7 @@ public class TransactionService {
         val criteria = TransactionCriteria.builder()
                 .searchTerms(searchTerms)
                 .mode(TransactionCriteriaMode.MEMBER)
-                .accountId(member.getId())
+                .memberId(member.getId())
                 .build();
         val spec = new TransactionSpecification(criteria);
         return repository.findAll(spec, pageable);

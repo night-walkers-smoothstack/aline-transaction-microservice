@@ -25,9 +25,9 @@ public class MemberController {
     @ResponseStatus(HttpStatus.OK)
     public Page<TransactionResponse> getAllTransactionsByMemberId(@PathVariable long id,
                                                                   Pageable pageable,
-                                                                  @RequestParam("search")
-                                                                  String[] searchTerms) {
-        Page<Transaction> transactions = service.getAllTransactionsByMemberId(id, pageable, searchTerms);
+                                                                  @RequestParam(required = false)
+                                                                  String[] search) {
+        Page<Transaction> transactions = service.getAllTransactionsByMemberId(id, pageable, search);
         return transactions.map(service::mapToResponse);
     }
 }

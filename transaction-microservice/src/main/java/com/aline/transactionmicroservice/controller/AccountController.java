@@ -30,7 +30,7 @@ public class AccountController {
     @ResponseStatus(HttpStatus.OK)
     public Page<TransactionResponse> getAllTransactionsByAccountId(@PathVariable long id,
                                                                    Pageable pageable,
-                                                                   @RequestParam("search")
+                                                                   @RequestParam(defaultValue = "")
                                                                    String[] search) {
         log.info(Arrays.toString(search));
         Page<Transaction> transactionsPage = service.getAllTransactionsByAccountId(id, pageable, search);
@@ -41,7 +41,7 @@ public class AccountController {
     @ResponseStatus(HttpStatus.OK)
     public Page<TransactionResponse> getAllTransactionsByAccountId(@PathVariable String accountNumber,
                                                                    Pageable pageable,
-                                                                   @RequestParam("search")
+                                                                   @RequestParam(required = false)
                                                                    String[] search) {
         Page<Transaction> transactionsPage = service.getAllTransactionsByAccountNumber(accountNumber, pageable, search);
         return transactionsPage.map(service::mapToResponse);

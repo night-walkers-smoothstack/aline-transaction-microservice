@@ -1,8 +1,11 @@
 package com.aline.transactionmicroservice.util;
 
+import com.aline.core.model.Member_;
+import com.aline.core.model.account.Account_;
 import com.aline.transactionmicroservice.model.Transaction;
 import com.aline.transactionmicroservice.model.Transaction_;
 import lombok.RequiredArgsConstructor;
+import lombok.val;
 import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -10,7 +13,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.util.Arrays;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class TransactionSpecification implements Specification<Transaction> {
@@ -34,19 +36,28 @@ public class TransactionSpecification implements Specification<Transaction> {
     }
 
     public Predicate searchByAccount(long accountId, String[] searchTerms, Root<Transaction> root, CriteriaBuilder cb) {
-        final Predicate byAccount = cb.equal(root.get("account").get("id"), accountId);
-        Predicate[] bySearchTerms = Arrays.stream(searchTerms)
-                .map(term -> searchBySearchTerm(term, root, cb))
-                .toArray(Predicate[]::new);
-        return cb.and(byAccount, cb.or(bySearchTerms));
+        final Predicate byAccount = cb.equal(root.get(Transaction_.account).get(Account_.ID), accountId);
+
+        return getSearchTermsPredicate(searchTerms, root, cb, byAccount);
     }
 
     public Predicate searchByMemberId(long memberId, String[] searchTerms, Root<Transaction> root, CriteriaBuilder cb) {
-        final Predicate byMember = cb.equal(root.get("account").get("members").get("id"), memberId);
-        Predicate[] bySearchTerms = Arrays.stream(searchTerms)
-                .map(term -> searchBySearchTerm(term, root, cb))
-                .toArray(Predicate[]::new);
-        return cb.and(byMember, cb.or(bySearchTerms));
+
+        val members = root.join(Transaction_.account).join(Account_.members);
+        val byMember = cb.equal(members.get(Member_.id), memberId);
+        return getSearchTermsPredicate(searchTerms, root, cb, byMember);
+    }
+
+    private Predicate getSearchTermsPredicate(String[] searchTerms, Root<Transaction> root, CriteriaBuilder cb, Predicate byPredicate) {
+        if (searchTerms != null) {
+            if (searchTerms.length > 0) {
+                Predicate[] bySearchTerms = Arrays.stream(searchTerms)
+                        .map(term -> searchBySearchTerm(term, root, cb))
+                        .toArray(Predicate[]::new);
+                return cb.and(byPredicate, cb.or(bySearchTerms));
+            }
+        }
+        return byPredicate;
     }
 
     public Predicate searchBySearchTerm(String searchTerm, Root<Transaction> root, CriteriaBuilder cb) {
