@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PositiveOrZero;
+import javax.validation.constraints.Size;
 
 @Data
 @Builder
@@ -25,5 +26,7 @@ public class TransferFundsRequest {
     @NotNull
     @PositiveOrZero
     private int amount;
+    @Size(max = 250)
+    private String memo;
 
 }
