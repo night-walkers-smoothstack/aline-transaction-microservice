@@ -205,7 +205,7 @@ public class TransactionApi {
 
         int balance = transaction.getPostedBalance();
 
-        if (balance < 0) {
+        if (balance <= 0 && transaction.isDecreasing()) {
             denyTransaction(transaction);
         }
 
