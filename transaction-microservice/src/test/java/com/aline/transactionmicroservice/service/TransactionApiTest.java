@@ -408,6 +408,17 @@ class TransactionApiTest {
             assertEquals(receipts[0].getStatus(), TransactionStatus.DENIED);
             assertEquals(receipts[1].getStatus(), TransactionStatus.DENIED);
 
+            Transaction inTransaction = repository.findById(receipts[0].getId())
+                    .orElse(null);
+            Transaction outTransaction = repository.findById(receipts[1].getId())
+                    .orElse(null);
+
+            assertNotNull(inTransaction);
+            assertNotNull(outTransaction);
+
+            assertEquals(inTransaction.getStatus(), TransactionStatus.DENIED);
+            assertEquals(outTransaction.getStatus(), TransactionStatus.DENIED);
+
             Account fromAccount = accountRepository.findByAccountNumber(request.getFromAccountNumber())
                     .orElse(null);
 
