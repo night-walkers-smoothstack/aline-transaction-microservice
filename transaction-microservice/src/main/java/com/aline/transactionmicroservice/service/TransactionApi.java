@@ -11,6 +11,7 @@ import com.aline.transactionmicroservice.dto.CreateTransaction;
 import com.aline.transactionmicroservice.dto.MerchantResponse;
 import com.aline.transactionmicroservice.dto.Receipt;
 import com.aline.transactionmicroservice.dto.TransferFundsRequest;
+import com.aline.transactionmicroservice.exception.InsufficientFundsException;
 import com.aline.transactionmicroservice.exception.TransactionNotFoundException;
 import com.aline.transactionmicroservice.exception.TransactionPostedException;
 import com.aline.transactionmicroservice.model.Merchant;
@@ -203,6 +204,7 @@ public class TransactionApi {
 
         if (balance < 0) {
             denyTransaction(transaction);
+            throw new InsufficientFundsException();
         }
 
         // If the status is still pending after all checks
@@ -258,6 +260,7 @@ public class TransactionApi {
      * @return An array of 2 receipts
      */
     @PreAuthorize("@authService.canTransfer(#request)")
+    @Transactional(rollbackOn = {InsufficientFundsException.class})
     public Receipt[] transferFunds(TransferFundsRequest request) {
 
         String maskedFromAccountNo = accountService
