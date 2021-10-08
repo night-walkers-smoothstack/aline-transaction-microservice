@@ -396,7 +396,7 @@ class TransactionApiTest {
         }
 
         @Test
-        void test_transferFunds_denyBothTransactions_when_notEnoughFunds_fromAccount() {
+        void test_transferFunds_denyOutTransaction_when_notEnoughFunds_fromAccount() {
             TransferFundsRequest request = TransferFundsRequest.builder()
                     .fromAccountNumber("0011011234")
                     .toAccountNumber("0012021234")
@@ -408,16 +408,17 @@ class TransactionApiTest {
             assertEquals(receipts[0].getStatus(), TransactionStatus.DENIED);
             assertEquals(receipts[1].getStatus(), TransactionStatus.DENIED);
 
-            Transaction inTransaction = repository.findById(receipts[0].getId())
-                    .orElse(null);
             Transaction outTransaction = repository.findById(receipts[1].getId())
                     .orElse(null);
 
-            assertNotNull(inTransaction);
-            assertNotNull(outTransaction);
+            Transaction inTransaction = repository.findById(receipts[0].getId())
+                    .orElse(null);
 
-            assertEquals(inTransaction.getStatus(), TransactionStatus.DENIED);
+            assertNotNull(outTransaction);
+            assertNotNull(inTransaction);
+
             assertEquals(outTransaction.getStatus(), TransactionStatus.DENIED);
+            assertEquals(inTransaction.getStatus(), TransactionStatus.DENIED);
 
             Account fromAccount = accountRepository.findByAccountNumber(request.getFromAccountNumber())
                     .orElse(null);

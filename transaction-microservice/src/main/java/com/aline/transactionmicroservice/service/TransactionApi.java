@@ -30,6 +30,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import javax.validation.Valid;
+import java.time.LocalDateTime;
 
 /**
  * Post transaction service handles the processing
@@ -55,6 +56,8 @@ public class TransactionApi {
             AccountNotFoundException.class
     })
     public Transaction createTransaction(@Valid CreateTransaction createTransaction) {
+        log.info("Creating transaction...");
+        log.debug("Create transaction DTO: {}", createTransaction);
         Transaction transaction = mapper.map(createTransaction, Transaction.class);
         transaction.setMethod(createTransaction.getMethod());
 
@@ -63,6 +66,7 @@ public class TransactionApi {
             transaction.setAccount(account);
             transaction.setInitialBalance(account.getBalance());
         } else {
+            log.error("Card service is not live. Make sure that the service is live and healthy.");
             throw new BadRequestException("Card services are currently unavailable. Please try again later.");
         }
 
@@ -75,6 +79,8 @@ public class TransactionApi {
 
         transaction.setStatus(TransactionStatus.PENDING); // Transactions will initially be pending when created
         transaction.setState(TransactionState.CREATED);
+        transaction.setDate(LocalDateTime.now());
+        log.info("Transaction created and set to PENDING at {}", transaction.getDate());
         return repository.save(transaction);
     }
 
@@ -139,6 +145,7 @@ public class TransactionApi {
      * @param transaction The transaction to approve
      */
     public void approveTransaction(Transaction transaction) {
+        log.info("Approving transaction {}...", transaction.getId());
         transaction.setStatus(TransactionStatus.APPROVED);
         performTransaction(transaction);
     }
@@ -148,6 +155,7 @@ public class TransactionApi {
      * @param transaction The transaction to deny
      */
     public void denyTransaction(Transaction transaction) {
+        log.info("Denying transaction {}...", transaction.getId());
         transaction.setStatus(TransactionStatus.DENIED);
         performTransaction(transaction);
     }
@@ -166,9 +174,17 @@ public class TransactionApi {
         boolean isDecreasing = transaction.isDecreasing();
         int amount = transaction.getAmount();
 
+        log.info("Performing transaction: [amount={}, isIncreasing={}, isDecreasing={}]",
+                amount,
+                isIncreasing,
+                isDecreasing);
+
         Account account = transaction.getAccount();
 
         int postedBalance = account.getBalance();
+        log.info("Account {} balance before transaction: {}", account.getId(), postedBalance);
+
+        log.info("Transaction {} is {}", transaction.getId(), transaction.getStatus().toString());
 
         // If transaction is approved, decrease actual balance
         if (transaction.getStatus() == TransactionStatus.APPROVED) {
@@ -186,11 +202,18 @@ public class TransactionApi {
                 } else if (isDecreasing && !isIncreasing) {
                     postedBalance = checkingAccount.getAvailableBalance() - amount;
                 }
-                transaction.setPostedBalance(postedBalance);
-                return;
+            } else {
+                if (isIncreasing && !isDecreasing) {
+                    postedBalance = account.getBalance() + amount;
+                } else if (isDecreasing && !isIncreasing) {
+                    postedBalance = account.getBalance() - amount;
+                }
             }
+            transaction.setPostedBalance(postedBalance);
+            return;
         }
         transaction.setPostedBalance(postedBalance);
+        log.info("Account {} balance after transactions: {}", account.getId(), postedBalance);
     }
 
     /**
@@ -198,6 +221,7 @@ public class TransactionApi {
      * @param transaction The transaction to validate
      */
     public void validateTransaction(Transaction transaction) {
+        log.info("Validating transaction...");
         if (transaction.getState() != TransactionState.PROCESSING)
             throw new UnprocessableException("Transaction is in an invalid state.");
         if (transaction.getStatus() != TransactionStatus.PENDING)
@@ -205,7 +229,9 @@ public class TransactionApi {
 
         int balance = transaction.getPostedBalance();
 
-        if (balance <= 0 && transaction.isDecreasing()) {
+        log.info("New posted balance: {}", balance);
+
+        if (balance < 0 && transaction.isDecreasing()) {
             denyTransaction(transaction);
         }
 
@@ -219,6 +245,7 @@ public class TransactionApi {
      * @param transaction The transaction to post
      */
     public void postTransaction(Transaction transaction) {
+        log.info("Posting transaction {}", transaction.getId());
         if (transaction.getState() == TransactionState.POSTED)
             throw new UnprocessableException("Transaction is already posted.");
         if (transaction.getState() != TransactionState.PROCESSING)
@@ -237,8 +264,8 @@ public class TransactionApi {
                 if (account.getAccountType() == AccountType.CHECKING)
                     ((CheckingAccount) account).decreaseAvailableBalance(transaction.getAmount());
             }
-            log.info("Transaction approved.");
         }
+        log.info("Transaction {} {}", transaction.getId(), transaction.getStatus());
         repository.save(transaction);
     }
 
@@ -264,6 +291,8 @@ public class TransactionApi {
     @PreAuthorize("@authService.canTransfer(#request)")
     public Receipt[] transferFunds(TransferFundsRequest request) {
 
+        log.info("Starting transfer funds...");
+
         String maskedFromAccountNo = accountService
                 .maskAccountNumber(request.getFromAccountNumber());
 
@@ -275,7 +304,6 @@ public class TransactionApi {
 
         String inDescription = String.format("%s%s", String.format("TRANSFER from account %s", maskedFromAccountNo),
                 (Strings.isNotBlank(request.getMemo()) && request.getMemo() != null) ? " - " + request.getMemo() : "");
-
 
         CreateTransaction transferOut = CreateTransaction.builder()
                 .accountNumber(request.getFromAccountNumber())
@@ -296,10 +324,15 @@ public class TransactionApi {
         Transaction outTransaction = createTransaction(transferOut);
         Transaction inTransaction = createTransaction(transferIn);
 
+        log.info("Creating transfer transactions: [out: {}, in: {}]", outTransaction.getId(), inTransaction.getId());
+
         Receipt outReceipt = processTransaction(outTransaction);
         Receipt inReceipt;
 
-        if (outReceipt.getStatus() == TransactionStatus.DENIED) {
+        Transaction processedOutTransaction = repository.findById(outReceipt.getId())
+                .orElseThrow(TransactionNotFoundException::new);
+
+        if (processedOutTransaction.getStatus() == TransactionStatus.DENIED) {
             inTransaction.setState(TransactionState.PROCESSING);
             denyTransaction(inTransaction);
             postTransaction(inTransaction);
@@ -308,6 +341,12 @@ public class TransactionApi {
         } else {
             inReceipt = processTransaction(inTransaction);
         }
+
+        log.info("Transfer transactions [out: {}, in: {}, amount: {}] {}",
+                outTransaction.getId(),
+                inTransaction.getId(),
+                outTransaction.getAmount(),
+                inTransaction.getStatus());
 
         return new Receipt[]{
                 outReceipt,

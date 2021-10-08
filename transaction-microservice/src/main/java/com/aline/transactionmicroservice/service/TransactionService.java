@@ -104,7 +104,7 @@ public class TransactionService {
      * Get all transactions associated with an account entity
      * @param account The account entity
      * @param pageable The pageable object passed in by the calling controller
-     * @return A page of transacitons
+     * @return A page of transactions
      */
     public Page<Transaction> getAllTransactionsByAccount(@NonNull Account account,
                                                          @NonNull Pageable pageable,

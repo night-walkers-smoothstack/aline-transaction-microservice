@@ -123,11 +123,14 @@ public class Transaction {
     @ManyToOne
     private Merchant merchant;
 
+    @NotNull
+    private LocalDateTime date;
+
     /**
      * The date the transaction was made
      */
     @CreationTimestamp
-    private LocalDateTime date;
+    private LocalDateTime created;
 
     /**
      * The last time the transaction was modified

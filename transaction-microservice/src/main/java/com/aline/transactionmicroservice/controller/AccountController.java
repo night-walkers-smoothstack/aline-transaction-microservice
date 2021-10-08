@@ -32,7 +32,6 @@ public class AccountController {
                                                                    Pageable pageable,
                                                                    @RequestParam(defaultValue = "")
                                                                    String[] search) {
-        log.info(Arrays.toString(search));
         Page<Transaction> transactionsPage = service.getAllTransactionsByAccountId(id, pageable, search);
         return transactionsPage.map(service::mapToResponse);
     }
