@@ -395,6 +395,33 @@ class TransactionApiTest {
 
         }
 
+        @Test
+        void test_transferFunds_denyBothTransactions_when_notEnoughFunds_fromAccount() {
+            TransferFundsRequest request = TransferFundsRequest.builder()
+                    .fromAccountNumber("0011011234")
+                    .toAccountNumber("0012021234")
+                    .amount(500000)
+                    .build();
+
+            Receipt[] receipts = transactions.transferFunds(request);
+            assertEquals(2, receipts.length);
+            assertEquals(receipts[0].getStatus(), TransactionStatus.DENIED);
+            assertEquals(receipts[1].getStatus(), TransactionStatus.DENIED);
+
+            Account fromAccount = accountRepository.findByAccountNumber(request.getFromAccountNumber())
+                    .orElse(null);
+
+            Account toAccount = accountRepository.findByAccountNumber(request.getToAccountNumber())
+                    .orElse(null);
+
+            assertNotNull(fromAccount);
+            assertNotNull(toAccount);
+
+            assertEquals(100000, fromAccount.getBalance());
+            assertEquals(10000000, toAccount.getBalance());
+
+        }
+
     }
 
 }
