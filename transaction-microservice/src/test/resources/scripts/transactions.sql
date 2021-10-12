@@ -70,7 +70,7 @@ insert into transaction (id, type, method, amount, date, account_id, initial_bal
 values (6, 'WITHDRAWAL', 'ACH', 500000, '2021-08-01', 3, 1800000, 1300000, 'APPROVED', 'ALINE', 'POSTED');
 
 insert into transaction (id, type, method, amount, date, account_id, initial_balance, posted_balance, status, merchant_code, state, description)
-values (7, 'TRANSFER_OUT', 'APP', 500000, '2021-08-01', 2, 1300000, 80000, 'APPROVED', 'NONE', 'POSTED', 'Batman is also Bruce Wayne.');
+values (7, 'TRANSFER_OUT', 'APP', 500000, '2021-08-01', 2, 1300000, 80000, 'APPROVED', 'NONE', 'POSTED', 'Bruce Wayne is also Batman.');
 
 insert into transaction (id, type, method, amount, date, account_id, initial_balance, posted_balance, status, merchant_code, state, description)
 values (8, 'TRANSFER_IN', 'APP', 500000, '2021-08-01', 2, 1300000, 80000, 'APPROVED', 'NONE', 'POSTED', 'Peter Parker is Spider Man.');

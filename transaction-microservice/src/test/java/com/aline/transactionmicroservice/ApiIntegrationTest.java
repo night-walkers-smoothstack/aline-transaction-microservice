@@ -133,6 +133,16 @@ class ApiIntegrationTest {
                     .andDo(print());
         }
 
+        @Test
+        void test_searchTransactionsByMemberId_searchWithMultiWordSearchTerm_status_is_ok_correctAmount() throws Exception {
+            mockMvc.perform(get("/members/{id}/transactions", 1)
+                    .queryParam("search", "is man"))
+                    .andExpect(status().isOk())
+                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(jsonPath("$.content.length()").value(4))
+                    .andDo(print());
+        }
+
     }
 
     @Nested

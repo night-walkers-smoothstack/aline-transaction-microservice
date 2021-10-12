@@ -59,7 +59,9 @@ public class TransactionSpecification implements Specification<Transaction> {
         if (searchTerms != null) {
             if (searchTerms.length > 0) {
                 log.info("Searching with search terms: {}", Arrays.toString(searchTerms));
-                Predicate bySearchTerms = cb.or(Arrays.stream(searchTerms).map(term -> searchBySearchTerm(term, root, cb)).toArray(Predicate[]::new));
+                Predicate bySearchTerms = cb.or(Arrays.stream(searchTerms)
+                        .map(term -> searchBySearchTerm(term, root, cb))
+                        .toArray(Predicate[]::new));
                 return cb.and(byPredicate, bySearchTerms);
             }
         }
@@ -67,10 +69,15 @@ public class TransactionSpecification implements Specification<Transaction> {
     }
 
     public Predicate searchBySearchTerm(String searchTerm, Root<Transaction> root, CriteriaBuilder cb) {
-        String searchPattern = "%" + searchTerm.toLowerCase(Locale.ROOT) + "%";
-        Predicate byDescription = cb.like(cb.lower(root.get(Transaction_.description)), searchPattern);
+
+        Predicate[] searchTerms = Arrays.stream(searchTerm.split("[\\s,]+"))
+                .map(term -> {
+                    String searchPattern = "%" + term.toLowerCase(Locale.ROOT) + "%";
+                    log.info("Search Pattern: {}", searchPattern);
+                    return cb.like(cb.lower(root.get(Transaction_.description)), searchPattern);
+                }).toArray(Predicate[]::new);
         List<Predicate> merchantInfo = searchMerchantInfoBySearchTerm(searchTerm, root, cb);
-        return cb.or(byDescription, cb.or(merchantInfo.toArray(new Predicate[0])));
+        return cb.or(cb.and(searchTerms), cb.or(merchantInfo.toArray(new Predicate[0])));
     }
 
     public List<Predicate> searchMerchantInfoBySearchTerm(String searchTerm, Root<Transaction> root, CriteriaBuilder cb) {
