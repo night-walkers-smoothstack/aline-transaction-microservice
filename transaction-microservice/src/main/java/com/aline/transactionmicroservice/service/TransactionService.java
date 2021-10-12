@@ -11,6 +11,7 @@ import com.aline.transactionmicroservice.util.TransactionCriteriaMode;
 import com.aline.transactionmicroservice.util.TransactionSpecification;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -26,6 +27,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class TransactionService {
     private final TransactionRepository repository;
     private final AccountService accountService;

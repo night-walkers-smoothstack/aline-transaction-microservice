@@ -75,6 +75,8 @@ public class TransactionApi {
                     createTransaction.getMerchantCode(),
                     createTransaction.getMerchantName());
             transaction.setMerchant(merchant);
+        } else {
+            transaction.setMerchant(merchantService.getMerchantByCode("NONE"));
         }
 
         transaction.setStatus(TransactionStatus.PENDING); // Transactions will initially be pending when created

@@ -123,6 +123,16 @@ class ApiIntegrationTest {
                     .andDo(print());
         }
 
+        @Test
+        void test_searchTransactionsByAccountId_searchMerchantName_status_is_ok_correctAmount() throws Exception {
+            mockMvc.perform(get("/accounts/{id}/transactions", 2)
+                    .queryParam("search", "none"))
+                    .andExpect(status().isOk())
+                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(jsonPath("$.content.length()").value(2))
+                    .andDo(print());
+        }
+
     }
 
     @Nested
