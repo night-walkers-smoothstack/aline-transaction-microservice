@@ -103,7 +103,6 @@ class TransactionApiTest {
 
             // Merchant and account information are correct
             assertEquals("0011011234", account.getAccountNumber());
-            assertNull(transaction.getMerchant());
 
             assertEquals(TransactionType.WITHDRAWAL, transaction.getType());
             assertFalse(transaction.isIncreasing());
@@ -135,7 +134,7 @@ class TransactionApiTest {
             assertEquals("0011011234", account.getAccountNumber());
             assertEquals("ALINE", merchant.getCode());
             assertNotEquals(createTransaction.getMerchantName(), merchant.getName()); // If Merchant exists use existing name
-            assertEquals("Aline Financial Bank", merchant.getName());
+            assertEquals("Aline Financial", merchant.getName());
 
             assertEquals(TransactionType.PURCHASE, transaction.getType());
             assertFalse(transaction.isIncreasing());
@@ -166,7 +165,7 @@ class TransactionApiTest {
             assertEquals("0011011234", account.getAccountNumber());
             assertEquals("ALINE", merchant.getCode());
             assertNotEquals(createTransaction.getMerchantName(), merchant.getName()); // If Merchant exists use existing name
-            assertEquals("Aline Financial Bank", merchant.getName());
+            assertEquals("Aline Financial", merchant.getName());
 
             assertEquals(TransactionType.PURCHASE, transaction.getType());
             assertFalse(transaction.isIncreasing());
