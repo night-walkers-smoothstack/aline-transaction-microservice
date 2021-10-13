@@ -64,4 +64,14 @@ public class MerchantService {
                 });
     }
 
+    /**
+     * Set this as the merchant if no merchant was associated with the
+     * transaction.
+     * @return A Merchant object that represents "NO MERCHANT"
+     */
+    @PermitAll
+    public Merchant getNoneMerchant() {
+        return checkMerchant("NONE", "No merchant");
+    }
+
 }

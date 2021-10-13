@@ -5,6 +5,7 @@ import com.aline.core.model.account.Account;
 import com.aline.core.model.user.MemberUser;
 import com.aline.core.model.user.UserRole;
 import com.aline.core.security.service.AbstractAuthorizationService;
+import com.aline.transactionmicroservice.dto.TransferFundsRequest;
 import com.aline.transactionmicroservice.exception.TransactionNotFoundException;
 import com.aline.transactionmicroservice.model.Transaction;
 import com.aline.transactionmicroservice.repository.TransactionRepository;
@@ -106,6 +107,24 @@ public class TransactionAuthorization extends AbstractAuthorizationService<Trans
             Member member = user.getMember();
             return member.getId() == memberId;
         }
+        return roleIsManagement();
+    }
+
+    /**
+     * Can transfer from an account only if the user owns the account
+     * the transaction is transferring from.
+     * @param request The transferFundsRequest
+     * @return True if the transaction can be applied
+     */
+    public boolean canTransfer(TransferFundsRequest request) {
+
+        if (getRole() == UserRole.MEMBER) {
+            MemberUser user = (MemberUser) getUser();
+            Member member = user.getMember();
+            Account fromAccount = accountService.getAccountByAccountNumber(request.getFromAccountNumber());
+            return fromAccount.getMembers().contains(member);
+        }
+
         return roleIsManagement();
     }
 }

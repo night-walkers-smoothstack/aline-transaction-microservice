@@ -11,6 +11,7 @@ import com.aline.transactionmicroservice.util.TransactionCriteriaMode;
 import com.aline.transactionmicroservice.util.TransactionSpecification;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -26,6 +27,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class TransactionService {
     private final TransactionRepository repository;
     private final AccountService accountService;
@@ -104,7 +106,7 @@ public class TransactionService {
      * Get all transactions associated with an account entity
      * @param account The account entity
      * @param pageable The pageable object passed in by the calling controller
-     * @return A page of transacitons
+     * @return A page of transactions
      */
     public Page<Transaction> getAllTransactionsByAccount(@NonNull Account account,
                                                          @NonNull Pageable pageable,

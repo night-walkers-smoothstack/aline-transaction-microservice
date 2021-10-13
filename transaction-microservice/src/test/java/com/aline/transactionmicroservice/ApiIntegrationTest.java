@@ -2,7 +2,9 @@ package com.aline.transactionmicroservice;
 
 import com.aline.core.annotation.test.SpringBootIntegrationTest;
 import com.aline.core.annotation.test.SpringTestProperties;
+import com.aline.transactionmicroservice.dto.TransferFundsRequest;
 import com.aline.transactionmicroservice.exception.TransactionNotFoundException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -15,6 +17,7 @@ import javax.transaction.Transactional;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -30,6 +33,9 @@ class ApiIntegrationTest {
 
     @Autowired
     TransactionMicroserviceApplication application;
+
+    @Autowired
+    ObjectMapper mapper;
 
     @Test
     void contextLoads() {
@@ -80,7 +86,7 @@ class ApiIntegrationTest {
         mockMvc.perform(get("/members/{id}/transactions", 1))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.content.length()").value(4));
+                .andExpect(jsonPath("$.content.length()").value(5));
     }
 
     @Test
@@ -115,6 +121,48 @@ class ApiIntegrationTest {
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                     .andExpect(jsonPath("$.content.length()").value(2))
                     .andDo(print());
+        }
+
+        @Test
+        void test_searchTransactionsByAccountId_searchMerchantName_status_is_ok_correctAmount() throws Exception {
+            mockMvc.perform(get("/accounts/{id}/transactions", 2)
+                    .queryParam("search", "none"))
+                    .andExpect(status().isOk())
+                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(jsonPath("$.content.length()").value(2))
+                    .andDo(print());
+        }
+
+        @Test
+        void test_searchTransactionsByMemberId_searchWithMultiWordSearchTerm_status_is_ok_correctAmount() throws Exception {
+            mockMvc.perform(get("/members/{id}/transactions", 1)
+                    .queryParam("search", "is man"))
+                    .andExpect(status().isOk())
+                    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(jsonPath("$.content.length()").value(4))
+                    .andDo(print());
+        }
+
+    }
+
+    @Nested
+    @DisplayName("Transfer Funds Test")
+    class TransferFundsTests {
+
+        @Test
+        void test_transferFunds_statusIsOk_when_both_accountsExists() throws Exception {
+            TransferFundsRequest request = TransferFundsRequest.builder()
+                        .fromAccountNumber("0011011234")
+                        .toAccountNumber("0012021234")
+                        .amount(10000)
+                        .build();
+
+            String body = mapper.writeValueAsString(request);
+            mockMvc.perform(post("/transactions/transfer")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(body))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$").isArray());
         }
 
     }

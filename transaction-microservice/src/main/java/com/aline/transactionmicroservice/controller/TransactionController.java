@@ -3,6 +3,7 @@ package com.aline.transactionmicroservice.controller;
 import com.aline.transactionmicroservice.dto.CreateTransaction;
 import com.aline.transactionmicroservice.dto.Receipt;
 import com.aline.transactionmicroservice.dto.TransactionResponse;
+import com.aline.transactionmicroservice.dto.TransferFundsRequest;
 import com.aline.transactionmicroservice.model.Transaction;
 import com.aline.transactionmicroservice.service.TransactionApi;
 import com.aline.transactionmicroservice.service.TransactionService;
@@ -44,6 +45,13 @@ public class TransactionController {
     public Receipt processTransaction(@Valid @RequestBody CreateTransaction createTransaction) {
         Transaction transaction = transactions.createTransaction(createTransaction);
         return transactions.processTransaction(transaction);
+    }
+
+    @Operation(description = "Create a transfer funds transaction")
+    @PostMapping("/transfer")
+    @ResponseStatus(HttpStatus.OK)
+    public Receipt[] transferFunds(@Valid @RequestBody TransferFundsRequest transferFundsRequest) {
+        return transactions.transferFunds(transferFundsRequest);
     }
 
 }

@@ -4,6 +4,7 @@ import com.aline.transactionmicroservice.dto.TransactionResponse;
 import com.aline.transactionmicroservice.model.Transaction;
 import com.aline.transactionmicroservice.service.TransactionService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/members")
 @RequiredArgsConstructor
+@Slf4j
 public class MemberController {
     private final TransactionService service;
 
@@ -25,8 +27,9 @@ public class MemberController {
     @ResponseStatus(HttpStatus.OK)
     public Page<TransactionResponse> getAllTransactionsByMemberId(@PathVariable long id,
                                                                   Pageable pageable,
-                                                                  @RequestParam(required = false)
+                                                                  @RequestParam(defaultValue = "")
                                                                   String[] search) {
+        log.info("Get all transactions made by member {} with search term {}", id, search);
         Page<Transaction> transactions = service.getAllTransactionsByMemberId(id, pageable, search);
         return transactions.map(service::mapToResponse);
     }
